@@ -345,16 +345,6 @@ const ChartOne: React.FC = () => {
     setTimeout(() => setZoomEnabled(true), 500)
   }
 
-  function handleXAxisLengthChange(categories: any, setIsZoomEnabled: any) {
-    const prevLengthRef = useRef(categories.length);
-  
-    useEffect(() => {
-      if (prevLengthRef.current !== categories.length) {
-        setIsZoomEnabled(true);
-        prevLengthRef.current = categories.length;
-      }
-    }, [categories.length, setIsZoomEnabled]);
-  }
   
   // ---------------------------------------
   // 4) UI Layout: Two dropdowns + Chart
