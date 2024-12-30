@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef} from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import ReactApexChart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
 import * as XLSX from "xlsx";
@@ -11,7 +11,6 @@ import { collection, getDocs } from "firebase/firestore";
 import Buttons from "@/app/ui-elements/buttons/page";
 import ButtonDefault from "../Buttons/ButtonDefault";
 import { FiRefreshCw } from "react-icons/fi"; // You can choose any icon you prefer
-
 
 // ---------------------------------------------------
 // 1) Constants: Days of week, route options, time slots
@@ -47,161 +46,197 @@ const ChartOne: React.FC = () => {
   const [selectedRoute, setSelectedRoute] = useState("1");
   const [selectedDay, setSelectedDay] = useState("Monday");
   const [seriesData, setSeriesData] = useState<number[]>([]);
-  
+
   // New state to control zoom
   const [zoomEnabled, setZoomEnabled] = useState(true);
 
-  const [isZoomEnabled, setIsZoomEnabled] = useState(false);
+  // State to indicate loading status
+  const [isLoading, setIsLoading] = useState(false);
+
+  // State to manage label frequency based on screen size
+  const [labelFrequency, setLabelFrequency] = useState(1); // Default: every hour
+
   // ---------------------------------------
-  // useEffect: Fetch from both Excel & Firebase, combine
+  // useEffect: Handle window resize to set label frequency
   // ---------------------------------------
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // ---------------------------------------
-        //  A) Initialize aggregator for 15-min slots
-        // ---------------------------------------
-        const aggregator: Record<string, { sum: number; count: number }> = {};
-        TIME_SLOTS_15.forEach((slot) => {
-          aggregator[slot] = { sum: 0, count: 0 };
-        });
-        console.log(aggregator)
-        // ---------------------------------------
-        //  B) Fetch & filter data from Excel
-        // ---------------------------------------
-        {
-          const response = await fetch("/routes.xlsx");
-          if (!response.ok) {
-            console.error("Failed to fetch Excel file:", response.statusText);
-          } else {
-            // Parse the Excel file
-            const arrayBuffer = await response.arrayBuffer();
-            const workbook = XLSX.read(arrayBuffer, { type: "array" });
-
-            // Assume data is in the first worksheet
-            const sheetName = workbook.SheetNames[0];
-            const worksheet = workbook.Sheets[sheetName];
-
-            // Convert sheet to JSON using first row as headers
-            const rawRows: any[] = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-            if (rawRows.length <= 1) {
-              console.warn("Excel file has no data rows");
-            } else {
-              const headers = rawRows[0];
-              const dataRows = rawRows.slice(1);
-
-              // Create a map of column -> index
-              const headerMap: Record<string, number> = {};
-              headers.forEach((h: string, idx: number) => {
-                headerMap[h.toString().trim().toLowerCase()] = idx;
-              });
-
-              // Iterate each row
-              dataRows.forEach((row) => {
-                const routeNum = row[0];
-                const dateStr = row[1];       // e.g. "12-08"
-                const timeBlock = row[3];     // e.g. "18:15"
-                const totalMins = Number(row[4]) || 0;
-
-                // Filter by route
-                if (String(routeNum) !== selectedRoute) return;
-
-                // Parse dateStr => mm-dd
-                const [mmStr, ddStr] = String(dateStr).split("-");
-                if (!mmStr || !ddStr) return;
-
-                const mm = parseInt(mmStr, 10) - 1; // zero-based month
-                const dd = parseInt(ddStr, 10);
-
-                // Parse timeBlock => HH:MM
-                const [hhStr, minStr] = String(timeBlock).split(":");
-                if (!hhStr || !minStr) return;
-
-                const hh = parseInt(hhStr, 10);
-                const mn = parseInt(minStr, 10);
-
-                // Construct JS date
-                const fullDate = new Date(currentYear, mm, dd, hh, mn);
-                // Only include Excel data BEFORE Dec 29 @ 5:00
-                if (fullDate >= excelCutoff) return;
-
-                // Check if day matches selectedDay
-                const weekdayIndex = fullDate.getDay(); // 0=Sun,1=Mon,...
-                if (dayMap[weekdayIndex] !== selectedDay) return;
-
-                // Aggregate
-                const timeSlot = `${hhStr.padStart(2, "0")}:${minStr.padStart(2, "0")}`;
-                if (aggregator[timeSlot]) {
-                  aggregator[timeSlot].sum += totalMins;
-                  aggregator[timeSlot].count += 1;
-                }
-              });
-            }
-          }
-        }
-
-        // ---------------------------------------
-        //  C) Fetch & filter data from Firebase
-        // ---------------------------------------
-        {
-          const colRef = collection(db, selectedRoute); // e.g. "1", "2", ...
-          const snapshot = await getDocs(colRef);
-          snapshot.forEach((doc) => {
-            // doc.id = e.g. "12_29_05-15"
-            const data = doc.data();
-            const totalMins = data.total_minutes ?? 0;
-
-            const docId = doc.id; 
-            // Split "MM_DD_HH-mm"
-            const [mmStr, ddStr, hhMin] = docId.split("_");
-            if (!mmStr || !ddStr || !hhMin) return;
-
-            const [hhStr, minStr] = hhMin.split("-");
-            if (!hhStr || !minStr) return;
-
-            const mm = parseInt(mmStr, 10) - 1;
-            const dd = parseInt(ddStr, 10);
-            const hh = parseInt(hhStr, 10);
-            const mn = parseInt(minStr, 10);
-
-            // Construct JS date
-            const fullDate = new Date(currentYear, mm, dd, hh, mn);
-            // Only include Firebase data ON or AFTER Dec 29 @ 5:15
-            if (fullDate < firebaseCutoff) return;
-
-            // Check if day matches selectedDay
-            const weekdayIndex = fullDate.getDay(); // 0=Sun,1=Mon,...
-            if (dayMap[weekdayIndex] !== selectedDay) return;
-
-            // Aggregate
-            const timeSlot = `${hhStr.padStart(2, "0")}:${minStr.padStart(2, "0")}`;
-            if (aggregator[timeSlot]) {
-              aggregator[timeSlot].sum += totalMins;
-              aggregator[timeSlot].count += 1;
-            }
-          });
-        }
-
-        // ---------------------------------------
-        //  D) Compute averages from aggregator
-        // ---------------------------------------
-        const averagedData = TIME_SLOTS_15.map((slot) => {
-          const { sum, count } = aggregator[slot];
-          return count > 0 ? sum / count : 0;
-        });
-        console.log(averagedData, 'averageddata')
-        setSeriesData(averagedData);
-      } catch (err) {
-        console.error("Error fetching data:", err);
+    const updateLabelFrequency = () => {
+      const width = window.innerWidth;
+      if (width < 640) { // Mobile devices
+        setLabelFrequency(6);
+      } else if (width < 1024) { // Tablets and small laptops
+        setLabelFrequency(4);
+      } else { // Desktops
+        setLabelFrequency(1);
       }
     };
 
-    fetchData();
+    // Initial check
+    updateLabelFrequency();
+
+    // Add event listener
+    window.addEventListener("resize", updateLabelFrequency);
+
+    // Cleanup
+    return () => window.removeEventListener("resize", updateLabelFrequency);
+  }, []);
+
+  // ---------------------------------------
+  // useCallback: Fetch from both Excel & Firebase, combine
+  // ---------------------------------------
+  const fetchData = useCallback(async () => {
+    setIsLoading(true); // Start loading
+    try {
+      // ---------------------------------------
+      //  A) Initialize aggregator for 15-min slots
+      // ---------------------------------------
+      const aggregator: Record<string, { sum: number; count: number }> = {};
+      TIME_SLOTS_15.forEach((slot) => {
+        aggregator[slot] = { sum: 0, count: 0 };
+      });
+      console.log(aggregator)
+      // ---------------------------------------
+      //  B) Fetch & filter data from Excel
+      // ---------------------------------------
+      {
+        const response = await fetch("/routes.xlsx");
+        if (!response.ok) {
+          console.error("Failed to fetch Excel file:", response.statusText);
+        } else {
+          // Parse the Excel file
+          const arrayBuffer = await response.arrayBuffer();
+          const workbook = XLSX.read(arrayBuffer, { type: "array" });
+
+          // Assume data is in the first worksheet
+          const sheetName = workbook.SheetNames[0];
+          const worksheet = workbook.Sheets[sheetName];
+
+          // Convert sheet to JSON using first row as headers
+          const rawRows: any[] = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+          if (rawRows.length <= 1) {
+            console.warn("Excel file has no data rows");
+          } else {
+            const headers = rawRows[0];
+            const dataRows = rawRows.slice(1);
+
+            // Create a map of column -> index
+            const headerMap: Record<string, number> = {};
+            headers.forEach((h: string, idx: number) => {
+              headerMap[h.toString().trim().toLowerCase()] = idx;
+            });
+
+            // Iterate each row
+            dataRows.forEach((row) => {
+              const routeNum = row[0];
+              const dateStr = row[1];       // e.g. "12-08"
+              const timeBlock = row[3];     // e.g. "18:15"
+              const totalMins = Number(row[4]) || 0;
+
+              // Filter by route
+              if (String(routeNum) !== selectedRoute) return;
+
+              // Parse dateStr => mm-dd
+              const [mmStr, ddStr] = String(dateStr).split("-");
+              if (!mmStr || !ddStr) return;
+
+              const mm = parseInt(mmStr, 10) - 1; // zero-based month
+              const dd = parseInt(ddStr, 10);
+
+              // Parse timeBlock => HH:MM
+              const [hhStr, minStr] = String(timeBlock).split(":");
+              if (!hhStr || !minStr) return;
+
+              const hh = parseInt(hhStr, 10);
+              const mn = parseInt(minStr, 10);
+
+              // Construct JS date
+              const fullDate = new Date(currentYear, mm, dd, hh, mn);
+              // Only include Excel data BEFORE Dec 29 @ 5:00
+              if (fullDate >= excelCutoff) return;
+
+              // Check if day matches selectedDay
+              const weekdayIndex = fullDate.getDay(); // 0=Sun,1=Mon,...
+              if (dayMap[weekdayIndex] !== selectedDay) return;
+
+              // Aggregate
+              const timeSlot = `${hhStr.padStart(2, "0")}:${minStr.padStart(2, "0")}`;
+              if (aggregator[timeSlot]) {
+                aggregator[timeSlot].sum += totalMins;
+                aggregator[timeSlot].count += 1;
+              }
+            });
+          }
+        }
+      }
+
+      // ---------------------------------------
+      //  C) Fetch & filter data from Firebase
+      // ---------------------------------------
+      {
+        const colRef = collection(db, selectedRoute); // e.g. "1", "2", ...
+        const snapshot = await getDocs(colRef);
+        snapshot.forEach((doc) => {
+          // doc.id = e.g. "12_29_05-15"
+          const data = doc.data();
+          const totalMins = data.total_minutes ?? 0;
+
+          const docId = doc.id; 
+          // Split "MM_DD_HH-mm"
+          const [mmStr, ddStr, hhMin] = docId.split("_");
+          if (!mmStr || !ddStr || !hhMin) return;
+
+          const [hhStr, minStr] = hhMin.split("-");
+          if (!hhStr || !minStr) return;
+
+          const mm = parseInt(mmStr, 10) - 1;
+          const dd = parseInt(ddStr, 10);
+          const hh = parseInt(hhStr, 10);
+          const mn = parseInt(minStr, 10);
+
+          // Construct JS date
+          const fullDate = new Date(currentYear, mm, dd, hh, mn);
+          // Only include Firebase data ON or AFTER Dec 29 @ 5:15
+          if (fullDate < firebaseCutoff) return;
+
+          // Check if day matches selectedDay
+          const weekdayIndex = fullDate.getDay(); // 0=Sun,1=Mon,...
+          if (dayMap[weekdayIndex] !== selectedDay) return;
+
+          // Aggregate
+          const timeSlot = `${hhStr.padStart(2, "0")}:${minStr.padStart(2, "0")}`;
+          if (aggregator[timeSlot]) {
+            aggregator[timeSlot].sum += totalMins;
+            aggregator[timeSlot].count += 1;
+          }
+        });
+      }
+
+      // ---------------------------------------
+      //  D) Compute averages from aggregator
+      // ---------------------------------------
+      const averagedData = TIME_SLOTS_15.map((slot) => {
+        const { sum, count } = aggregator[slot];
+        return count > 0 ? sum / count : 0;
+      });
+      console.log(averagedData, 'averageddata')
+      setSeriesData(averagedData);
+    } catch (err) {
+      console.error("Error fetching data:", err);
+    } finally {
+      setIsLoading(false); // End loading
+    }
   }, [selectedRoute, selectedDay]);
 
   // ---------------------------------------
+  // useEffect: Initial fetch and when selectedRoute or selectedDay changes
+  // ---------------------------------------
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  // ---------------------------------------
   // Format x-axis labels into “12 am, 1 am, 2 am…”
-  // Only display a label at the hour boundaries (e.g., XX:00).
+  // Only display a label at the specified frequency (e.g., every 3, 4, 6 hours).
   // ---------------------------------------
   const xLabelFormatter = (val: string) => {
     console.log(val); // For debugging purposes
@@ -210,8 +245,8 @@ const ChartOne: React.FC = () => {
       const hh = parseInt(hhStr, 10);
       const mm = parseInt(mmStr, 10);
 
-      // Only display labels at hour boundaries
-      if (mm !== 0) return "";
+      // Only display labels at the specified hour frequency and minute === 0
+      if (mm !== 0 || hh % labelFrequency !== 0) return "";
 
       // Convert 24-hour format to 12-hour format
       let period = "AM";
@@ -234,8 +269,8 @@ const ChartOne: React.FC = () => {
   const formatTooltipTime = (val: string) => {
     const newVal = parseInt(val) - 1
     const totalMinutes = newVal * 15
-    const hours = Math.floor(newVal / 4) 
-    const minutes = Math.floor(totalMinutes % 60) === 0 ? "00" : Math.floor(totalMinutes % 60)
+    const hours = Math.floor(totalMinutes / 60)
+    const minutes = totalMinutes % 60 === 0 ? "00" : (totalMinutes % 60).toString().padStart(2, "0")
     const period = hours >= 12 ? "pm" : "am";
     const hoursFinal = hours % 12 === 0 ? 12 : hours % 12
     return `${hoursFinal}:${minutes} ${period}`;
@@ -260,6 +295,29 @@ const ChartOne: React.FC = () => {
       height: 310,
       type: "area",
       toolbar: { show: false },
+      animations: {
+        enabled: true,
+        easing: 'easeinout',
+        speed: 800,
+        animateGradually: {
+          enabled: true,
+          delay: 150
+        },
+        dynamicAnimation: {
+          enabled: true,
+          speed: 350
+        }
+      }
+    },
+    noData: {
+      text: "Loading...",
+      align: "center",
+      verticalAlign: "top",
+      style: {
+        color: "black",
+        fontSize: "24px",
+        fontFamily: "Satoshi, sans-serif",
+      }
     },
     legend: { show: false },
     colors: ["#5750F1"],
@@ -305,6 +363,9 @@ const ChartOne: React.FC = () => {
       labels: {
         // Show custom x-axis labels
         formatter: (val) => xLabelFormatter(val as string),
+        style: {
+          fontSize: '12px',
+        },
       },
     },
     yaxis: {
@@ -313,6 +374,9 @@ const ChartOne: React.FC = () => {
       // Force integer (whole number) ticks only:
       labels: {
         formatter: (val) => val.toFixed(0),
+        style: {
+          fontSize: '12px',
+        },
       },
       title: { text: "Average Commute (min)" },
     },
@@ -337,6 +401,7 @@ const ChartOne: React.FC = () => {
           chart: { height: 320 },
         },
       },
+      // Additional responsive configurations can be added here if needed
     ],
   };
 
@@ -345,68 +410,100 @@ const ChartOne: React.FC = () => {
     setTimeout(() => setZoomEnabled(true), 500)
   }
 
-  
   // ---------------------------------------
-  // 4) UI Layout: Two dropdowns + Chart
+  // 4) Handle Reload Function
+  // ---------------------------------------
+  const handleReload = () => {
+    // Clear the current data to show empty chart
+    setSeriesData([]);
+
+    // Optionally, you can set a timeout to show "Loading..." text before data is fetched
+    // setIsLoading(true); // Not necessary if fetchData already handles loading state
+
+    // Fetch the data again
+    fetchData();
+  };
+
+  // ---------------------------------------
+  // 5) UI Layout: Refresh Button + Dropdowns + Chart
   // ---------------------------------------
   return (
-    <div className="col-span-12 rounded-[10px] bg-white px-7.5 pb-6 pt-7.5 shadow-1 dark:bg-gray-dark dark:shadow-card xl:col-span-7">
-      {/* Header & Dropdowns */}
-      <div className="mb-3.5 flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
-        <h4 className="text-body-2xlg font-bold text-dark dark:text-white">
+    <div className="col-span-12 rounded-[10px] bg-white px-4 pb-6 pt-7.5 shadow-1 dark:bg-gray-dark dark:shadow-card xl:col-span-7">
+      {/* Header & Controls */}
+      <div className="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between">
+        <h4 className="text-body-2xlg font-bold text-dark dark:text-white mb-2 sm:mb-0">
           Commute Time Overview
         </h4>
 
-        <div className="flex flex-wrap items-center gap-2.5">
-          <p className="font-medium uppercase text-dark dark:text-dark-6">Route:</p>
-          <select
-            value={selectedRoute}
-            onChange={(e) => {
-              console.log(`Route changed to: ${e.target.value}`); // Debugging log
-              setSelectedRoute(e.target.value);
-            }}
-            className="your-select-class"
-          >
-            {routeOptions.map((route) => (
-              <option key={route} value={route}>
-                {route}
-              </option>
-            ))}
-          </select>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-end gap-2 sm:gap-4">
+          {/* Refresh Button */}
 
-          <p className="font-medium uppercase text-dark dark:text-dark-6">Day:</p>
-          <select
-            value={selectedDay}
-            onChange={(e) => {
-              console.log(`Day changed to: ${e.target.value}`); // Debugging log
-              setSelectedDay(e.target.value);
-            }}
-            className="your-select-class"
-          >
-            {daysOfWeek.map((day) => (
-              <option key={day} value={day}>
-                {day}
-              </option>
-            ))}
-          </select>
-        </div>
-        
-        {/* Button to Disable Zoom */}
 
-        <button
-            onClick={() => zoomChange()}
-            className="ml-4 p-2 bg-gray-200 rounded hover:bg-gray-300 transition"
-            aria-label="Reset Zoom"
+          {/* Route Dropdown */}
+          <div className="flex items-center">
+            <label htmlFor="route" className="font-medium uppercase text-dark dark:text-dark-6 mr-2 text-sm">
+              Route:
+            </label>
+            <select
+              id="route"
+              value={selectedRoute}
+              onChange={(e) => {
+                console.log(`Route changed to: ${e.target.value}`); // Debugging log
+                setSelectedRoute(e.target.value);
+              }}
+              className="border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+            >
+              {routeOptions.map((route) => (
+                <option key={route} value={route}>
+                  {route}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Day Dropdown */}
+          <div className="flex items-center">
+            <label htmlFor="day" className="font-medium uppercase text-dark dark:text-dark-6 mr-2 text-sm">
+              Day:
+            </label>
+            <select
+              id="day"
+              value={selectedDay}
+              onChange={(e) => {
+                console.log(`Day changed to: ${e.target.value}`); // Debugging log
+                setSelectedDay(e.target.value);
+              }}
+              className="border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+            >
+              {daysOfWeek.map((day) => (
+                <option key={day} value={day}>
+                  {day}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <button
+            onClick={handleReload}
+            className="flex items-center justify-center p-2 bg-gray-200 rounded hover:bg-gray-300 transition"
+            aria-label="Refresh Data"
           >
             <FiRefreshCw size={20} />
           </button>
+
+
+        </div>
       </div>
 
       {/* Chart */}
-      <div className="-ml-4 -mr-5">
-        <ReactApexChart options={options} series={series} type="area" height={310} />
+      <div className="w-full overflow-x-auto">
+        <ReactApexChart 
+          options={options} 
+          series={series} 
+          type="area" 
+          height={310} 
+        />
       </div>
-
     </div>
   );
 };
