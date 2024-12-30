@@ -1,120 +1,504 @@
-import { ApexOptions } from "apexcharts";
-import React from "react";
+"use client";
+
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import ReactApexChart from "react-apexcharts";
-import DefaultSelectOption from "@/components/SelectOption/DefaultSelectOption";
+import { ApexOptions } from "apexcharts";
+import * as XLSX from "xlsx";
+
+// Firebase
+import { db } from "@/app/firebase"; // <-- import your Firebase config
+import { collection, getDocs } from "firebase/firestore";
+
+// Icons
+import { FiRefreshCw } from "react-icons/fi"; 
+
+// ---------------------------------------------------
+// 1) Define which routes are "Affected" vs "Not Affected"
+// ---------------------------------------------------
+const affectedRoutes = [1, 2, 3, 4, 5];
+const notAffectedRoutes = [16, 18];
+
+// ---------------------------------------------------
+// 2) We'll collect daily data from Excel & Firebase
+// ---------------------------------------------------
+// Define cutoff dates with correct years
+const excelCutoff = new Date(Date.UTC(2024, 11, 29, 5, 0));    // Dec 29, 2024 @ 5:00 UTC
+const firebaseCutoff = new Date(Date.UTC(2024, 11, 29, 5, 15)); // Dec 29, 2024 @ 5:15 UTC
+
+// Helper function to convert date to "YYYY-MM-DD"
+function toYMD(dt: Date) {
+  const yyyy = dt.getUTCFullYear();
+  const mm = String(dt.getUTCMonth() + 1).padStart(2, "0");
+  const dd = String(dt.getUTCDate()).padStart(2, "0");
+  return `${yyyy}-${mm}-${dd}`;
+}
+
+// Helper function to determine the correct year based on month
+function getYearForMonth(month: number): number {
+  // December (11) is 2024, January (0) is 2025
+  if (month === 11) return 2024;
+  if (month === 0) return 2025;
+  // Extend this logic if more months are involved
+  // For now, default to 2024
+  return 2024;
+}
 
 const ChartTwo: React.FC = () => {
-  const series = [
-    {
-      name: "Sales",
-      data: [44, 55, 41, 67, 22, 43, 65],
-    },
-    {
-      name: "Revenue",
-      data: [13, 23, 20, 8, 13, 27, 15],
-    },
-  ];
+  // ---------------------------------------------------
+  // A) State
+  // ---------------------------------------------------
+  // Visibility states for each series
+  const [isAffectedVisible, setIsAffectedVisible] = useState(true);
+  const [isNotAffectedVisible, setIsNotAffectedVisible] = useState(true);
 
-  const options: ApexOptions = {
-    colors: ["#5750F1", "#0ABEF9"],
-    chart: {
-      fontFamily: "Satoshi, sans-serif",
-      type: "bar",
-      height: 335,
-      stacked: true,
-      toolbar: {
-        show: false,
-      },
-      zoom: {
-        enabled: false,
-      },
-    },
+  // We'll keep two arrays of daily [timestamp, average] for each category
+  const [seriesAffected, setSeriesAffected] = useState<[number, number][]>([]);
+  const [seriesNotAffected, setSeriesNotAffected] = useState<[number, number][]>([]);
+  
+  // Loading indicator
+  const [isLoading, setIsLoading] = useState(false);
 
-    responsive: [
+  // ---------------------------------------------------
+  // B) Fetch + Combine data
+  // ---------------------------------------------------
+  const fetchData = useCallback(async () => {
+    setIsLoading(true);
+      // Aggregators for daily sums + counts
+      type DailyAgg = Record<string, { sum: number; count: number }>;
+      const aggregatorAffected: DailyAgg = {};
+      const aggregatorNotAffected: DailyAgg = {};
+
+      // We keep track of all unique dates to ensure we graph each date
+      const allDatesSet = new Set<string>();
+
+      // Helper to ensure aggregator has date key
+      function ensureAgg(obj: DailyAgg, dateStr: string) {
+        if (!obj[dateStr]) {
+          obj[dateStr] = { sum: 0, count: 0 };
+        }
+      }
+    try {
+
+
+      // ---------------------------------------------------
+      // 1) Read from Excel
+      // ---------------------------------------------------
       {
-        breakpoint: 1536,
-        options: {
-          plotOptions: {
-            bar: {
-              borderRadius: 3,
-              columnWidth: "25%",
-            },
-          },
+        const response = await fetch("/routes.xlsx");
+        if (!response.ok) {
+          console.error("Failed to fetch Excel file:", response.statusText);
+        } else {
+          // Parse the Excel file
+          const arrayBuffer = await response.arrayBuffer();
+          const workbook = XLSX.read(arrayBuffer, { type: "array" });
+          const sheetName = workbook.SheetNames[0];
+          const worksheet = workbook.Sheets[sheetName];
+          const rawRows: any[] = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+          if (rawRows.length <= 1) {
+            console.warn("Excel file has no data rows");
+          } else {
+            // dataRows will contain routeNum, dateStr, ???, timeBlock, totalMins, ...
+            const dataRows = rawRows.slice(1);
+
+            dataRows.forEach((row) => {
+              const routeNum = Number(row[0]); 
+              const dateStr = row[1];         // e.g. "12-08"
+              const timeBlock = row[3];       // e.g. "18:15"
+              const totalMins = Number(row[4]) || 0;
+
+              // Only handle routes we care about
+              const inAffected = affectedRoutes.includes(routeNum);
+              const inNotAffected = notAffectedRoutes.includes(routeNum);
+              if (!inAffected && !inNotAffected) return;
+
+              // Parse date/time => Date
+              if (!dateStr || !timeBlock) return;
+              const [mmStr, ddStr] = String(dateStr).split("-");
+              if (!mmStr || !ddStr) return;
+
+              const mm = parseInt(mmStr, 10) - 1; // 0-based
+              const dd = parseInt(ddStr, 10);
+
+              const [hhStr, minStr] = String(timeBlock).split(":");
+              if (!hhStr || !minStr) return;
+              const hh = parseInt(hhStr, 10);
+              const mn = parseInt(minStr, 10);
+
+              const year = getYearForMonth(mm);
+              const fullDate = new Date(Date.UTC(year, mm, dd, hh, mn));
+              if (fullDate.getTime() >= excelCutoff.getTime()) return;
+
+              // We'll aggregate by day
+              const dayStr = toYMD(fullDate);
+              allDatesSet.add(dayStr);
+
+              if (inAffected) {
+                ensureAgg(aggregatorAffected, dayStr);
+                aggregatorAffected[dayStr].sum += totalMins;
+                aggregatorAffected[dayStr].count++;
+              }
+              if (inNotAffected) {
+                ensureAgg(aggregatorNotAffected, dayStr);
+                aggregatorNotAffected[dayStr].sum += totalMins;
+                aggregatorNotAffected[dayStr].count++;
+              }
+            });
+          }
+        }
+      }
+
+      // ---------------------------------------------------
+      // 2) Read from Firebase
+      // doc.id => "MM_DD_HH-mm"
+      // ---------------------------------------------------
+      const allRoutesWeCareAbout = [...affectedRoutes, ...notAffectedRoutes];
+      const uniqueRoutesWeCare = Array.from(new Set(allRoutesWeCareAbout));
+
+      for (let routeNum of uniqueRoutesWeCare) {
+        const colRef = collection(db, String(routeNum));
+        const snapshot = await getDocs(colRef);
+
+        snapshot.forEach((doc) => {
+          const data = doc.data();
+          const totalMins = data.total_minutes ?? 0;
+          const docId = doc.id; // e.g. "12_29_05-15"
+
+          const [mmStr, ddStr, hhMin] = docId.split("_");
+          if (!mmStr || !ddStr || !hhMin) return;
+          const [hhStr, minStr] = hhMin.split("-");
+          if (!hhStr || !minStr) return;
+
+          const mm = parseInt(mmStr, 10) - 1; // 0-based
+          const dd = parseInt(ddStr, 10);
+          const hh = parseInt(hhStr, 10);
+          const mn = parseInt(minStr, 10);
+
+          const year = getYearForMonth(mm);
+          const fullDate = new Date(Date.UTC(year, mm, dd, hh, mn));
+          if (fullDate.getTime() < firebaseCutoff.getTime()) return;
+
+          // Aggregate daily
+          const dayStr = toYMD(fullDate);
+          allDatesSet.add(dayStr);
+
+          // This route belongs to either affected or not-affected
+          const inAffected = affectedRoutes.includes(routeNum);
+          const inNotAffected = notAffectedRoutes.includes(routeNum);
+
+          if (inAffected) {
+            ensureAgg(aggregatorAffected, dayStr);
+            aggregatorAffected[dayStr].sum += totalMins;
+            aggregatorAffected[dayStr].count++;
+          }
+          if (inNotAffected) {
+            ensureAgg(aggregatorNotAffected, dayStr);
+            aggregatorNotAffected[dayStr].sum += totalMins;
+            aggregatorNotAffected[dayStr].count++;
+          }
+        });
+      }
+
+      // ---------------------------------------------------
+      // 3) Build arrays [timestamp, average]
+      // to ensure we show every date we have data for
+      // ---------------------------------------------------
+      const allDatesArray = Array.from(allDatesSet).sort(); 
+      const tempAffected: [number, number][] = [];
+      const tempNotAffected: [number, number][] = [];
+
+      for (const dateStr of allDatesArray) {
+        const [y, m, d] = dateStr.split("-");
+        const yearNum = parseInt(y, 10);
+        const monNum = parseInt(m, 10) - 1; // 0-based
+        const dayNum = parseInt(d, 10);
+        // Use UTC timestamp
+        const ts = Date.UTC(yearNum, monNum, dayNum);
+
+        // Affected
+        if (aggregatorAffected[dateStr]) {
+          const { sum, count } = aggregatorAffected[dateStr];
+          const avg = count > 0 ? sum / count : 0;
+          tempAffected.push([ts, avg]);
+        } else {
+          // If no data for that date, push 0
+          tempAffected.push([ts, 0]);
+        }
+
+        // NotAffected
+        if (aggregatorNotAffected[dateStr]) {
+          const { sum, count } = aggregatorNotAffected[dateStr];
+          const avg = count > 0 ? sum / count : 0;
+          tempNotAffected.push([ts, avg]);
+        } else {
+          tempNotAffected.push([ts, 0]);
+        }
+      }
+
+      setSeriesAffected(tempAffected);
+      setSeriesNotAffected(tempNotAffected);
+
+    } catch (err) {
+      console.error("Error fetching data:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  // ---------------------------------------------------
+  // C) useEffect: fetch data on mount
+  // ---------------------------------------------------
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  // ---------------------------------------------------
+  // D) Handle Reload
+  // ---------------------------------------------------
+  const handleReload = () => {
+    setSeriesAffected([]);
+    setSeriesNotAffected([]);
+    fetchData();
+  };
+
+  // ---------------------------------------------------
+  // E) Chart Title
+  // ---------------------------------------------------
+  const chartTitle = "Commute times on routes expected to be Affected or Not Affected by Congestion Pricing";
+
+  // ---------------------------------------------------
+  // F) Build final series based on visibility
+  // ---------------------------------------------------
+  const finalSeries = [];
+  if (isAffectedVisible) {
+    finalSeries.push({
+      name: "Affected",
+      data: seriesAffected,
+    });
+  }
+  if (isNotAffectedVisible) {
+    finalSeries.push({
+      name: "Not Affected",
+      data: seriesNotAffected,
+    });
+  }
+
+  // ---------------------------------------------------
+  // G) ApexChart styling to match chartOne
+  // ---------------------------------------------------
+  // Define the timestamp for January 5, 2025
+  const jan5Timestamp = Date.UTC(2024, 11, 25); // Months are 0-indexed
+
+  // Check if data includes January 5, 2025 and at least one series is visible
+  const hasJan5 =
+    (isAffectedVisible &&
+      seriesAffected.some(([ts, _]) => ts === jan5Timestamp)) ||
+    (isNotAffectedVisible &&
+      seriesNotAffected.some(([ts, _]) => ts === jan5Timestamp));
+
+  // Memoize the options to optimize performance
+  const options: ApexOptions = useMemo(() => ({
+    chart: {
+      type: "area",
+      height: 310,
+      fontFamily: "Satoshi, sans-serif",
+      toolbar: { show: false },
+      zoom: { enabled: true },
+      animations: {
+        enabled: true,
+        easing: 'easeinout',
+        speed: 800,
+        animateGradually: {
+          enabled: true,
+          delay: 150
         },
+        dynamicAnimation: {
+          enabled: true,
+          speed: 350
+        }
       },
+      // Remove built-in legend since we're using custom controls
+      // Alternatively, you can keep it and handle events if possible
+    },
+    noData: {
+      text: isLoading ? "Loading..." : "No data available",
+      align: "center",
+      verticalAlign: "top",
+      style: {
+        color: "black",
+        fontSize: "24px",
+        fontFamily: "Satoshi, sans-serif",
+      }
+    },
+    // Dynamically set colors based on visible series
+    colors: [
+      ...(isAffectedVisible ? ["#5750F1"] : []),
+      ...(isNotAffectedVisible ? ["#FA7247"] : []),
     ],
-    plotOptions: {
-      bar: {
-        horizontal: false,
-        borderRadius: 3,
-        columnWidth: "25%",
-        borderRadiusApplication: "end",
-        borderRadiusWhenStacked: "last",
+    fill: {
+      type: "gradient",
+      gradient: {
+        shadeIntensity: 1,
+        opacityFrom: 0.55,
+        opacityTo: 0,
+        stops: [0, 90, 100],
+      },
+    },
+    stroke: {
+      curve: "smooth",
+    },
+    // Markers hidden by default, show on hover
+    markers: {
+      size: 0,
+      hover: {
+        size: 5,
       },
     },
     dataLabels: {
       enabled: false,
     },
-
     grid: {
       strokeDashArray: 5,
-      xaxis: {
-        lines: {
-          show: false,
-        },
+      xaxis: { lines: { show: false } },
+      yaxis: { lines: { show: true } },
+    },
+    tooltip: {
+      x: {
+        format: "MMM dd", // e.g. Dec 10
       },
-      yaxis: {
-        lines: {
-          show: true,
-        },
+      y: {
+        formatter: (val) => (typeof val === 'number' ? `${val.toFixed(0)} min` : ''),
       },
     },
-
     xaxis: {
-      categories: ["M", "T", "W", "T", "F", "S", "S"],
+      type: "datetime",
+      title: {
+        text: "Date",
+      },
+      labels: {
+        style: {
+          fontSize: "12px",
+        },
+      },
+      // Removed tickAmount to let ApexCharts handle it automatically
+    },
+    yaxis: {
+      title: {
+        text: "Average commute time",
+      },
+      labels: {
+        formatter: (val) => (typeof val === 'number' ? `${val.toFixed(0)} min` : ''),
+        style: {
+          fontSize: "12px",
+        },
+      },
+      min: 0,
+    },
+    // Conditional Vertical line annotation (e.g., start of Congestion Pricing)
+    annotations: {
+      xaxis: hasJan5 ? [
+        {
+          x: jan5Timestamp, // January 5, 2025 (month 0)
+          strokeDashArray: 4,
+          borderColor: "black",
+          label: {
+            style: {
+              fontWeight: 'bold',
+              color: "#777", // Corrected color format
+              background: "white",
+              padding: {
+                left: 5,
+                right: 5,
+                top: 5,
+                bottom: 5,
+              }
+            },
+            text: "Congestion Pricing Start",
+            orientation: "horizontal",
+          },
+        },
+      ] : [],
     },
     legend: {
-      position: "top",
-      horizontalAlign: "left",
-      fontFamily: "Satoshi",
-      fontWeight: 500,
-      fontSize: "14px",
-
-      markers: {
-        radius: 99,
-        width: 16,
-        height: 16,
-        strokeWidth: 10,
-        strokeColor: "transparent",
+      show: false, // Hide built-in legend since we're using custom controls
+    },
+    responsive: [
+      {
+        breakpoint: 1024,
+        options: {
+          chart: { height: 300 },
+        },
       },
-    },
-    fill: {
-      opacity: 1,
-    },
-  };
+      {
+        breakpoint: 1366,
+        options: {
+          chart: { height: 320 },
+        },
+      },
+    ],
+  }), [isLoading, hasJan5, jan5Timestamp, seriesAffected, seriesNotAffected, isAffectedVisible, isNotAffectedVisible]);
 
+  // ---------------------------------------------------
+  // H) Render
+  // ---------------------------------------------------
   return (
-    <div className="col-span-12 rounded-[10px] bg-white px-7.5 pt-7.5 shadow-1 dark:bg-gray-dark dark:shadow-card xl:col-span-5">
-      <div className="mb-4 justify-between gap-4 sm:flex">
-        <div>
-          <h4 className="text-body-2xlg font-bold text-dark dark:text-white">
-            Profit this week
-          </h4>
-        </div>
-        <div>
-          <DefaultSelectOption options={["This Week", "Last Week"]} />
+    <div className="col-span-12 rounded-[10px] bg-white px-4 pb-6 pt-7.5 shadow-1 dark:bg-gray-dark dark:shadow-card">
+      {/* Header & Controls (similar to chartOne's style) */}
+      <div className="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between">
+        <h4 className="text-body-2xlg font-bold text-dark dark:text-white mb-2 sm:mb-0">
+          {chartTitle}
+        </h4>
+
+        <div className="flex flex-row items-center gap-4">
+          {/* Custom Legend Controls */}
+          <div className="flex items-center space-x-6">
+            {/* Affected Legend Item */}
+            <div 
+              role="button"
+              aria-pressed={isAffectedVisible}
+              className="flex items-center space-x-2 cursor-pointer"
+              onClick={() => setIsAffectedVisible(prev => !prev)}
+            >
+              <span 
+                className={`w-4 h-4 rounded-full transition-opacity duration-300 ${isAffectedVisible ? 'opacity-100' : 'opacity-50'}`}
+                style={{ backgroundColor: "#5750F1" }}
+              ></span>
+              <span className="text-sm text-gray-700 dark:text-gray-300">Affected</span>
+            </div>
+            {/* Not Affected Legend Item */}
+            <div 
+              role="button"
+              aria-pressed={isNotAffectedVisible}
+              className="flex items-center space-x-2 cursor-pointer"
+              onClick={() => setIsNotAffectedVisible(prev => !prev)}
+            >
+              <span 
+                className={`w-4 h-4 rounded-full transition-opacity duration-300 ${isNotAffectedVisible ? 'opacity-100' : 'opacity-50'}`}
+                style={{ backgroundColor: "#FA7247" }}
+              ></span>
+              <span className="text-sm text-gray-700 dark:text-gray-300">Not Affected</span>
+            </div>
+          </div>
+
+          {/* Refresh Button */}
+          <button
+            onClick={handleReload}
+            className="flex items-center justify-center p-2 bg-gray-200 rounded hover:bg-gray-300 transition"
+            aria-label="Refresh Data"
+          >
+            <FiRefreshCw size={20} />
+          </button>
         </div>
       </div>
 
-      <div>
-        <div id="chartTwo" className="-ml-3.5">
-          <ReactApexChart
-            options={options}
-            series={series}
-            type="bar"
-            height={370}
-          />
-        </div>
+      {/* Chart */}
+      <div className="w-full overflow-x-auto">
+        <ReactApexChart
+          options={options}
+          series={finalSeries}
+          type="area"
+          height={310}
+        />
       </div>
     </div>
   );

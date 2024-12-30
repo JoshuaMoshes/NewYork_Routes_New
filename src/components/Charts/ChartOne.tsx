@@ -380,14 +380,6 @@ const ChartOne: React.FC = () => {
       },
       title: { text: "Average Commute (min)" },
     },
-    title: {
-      text: `Commute times for Route ${selectedRoute} on ${selectedDay}`,
-      align: "center",
-      style: {
-        fontSize: "14px",
-        fontWeight: "bold",
-      },
-    },
     responsive: [
       {
         breakpoint: 1024,
@@ -432,7 +424,7 @@ const ChartOne: React.FC = () => {
       {/* Header & Controls */}
       <div className="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between">
         <h4 className="text-body-2xlg font-bold text-dark dark:text-white mb-2 sm:mb-0">
-          Commute Time Overview
+        Commute times for Route {selectedRoute} on {selectedDay}
         </h4>
 
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-end gap-2 sm:gap-4">
