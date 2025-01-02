@@ -2,6 +2,8 @@
 import React from "react";
 import ChartOne from "@/components/Charts/ChartOne";
 import ChartTwo from "@/components/Charts/ChartTwo";
+import MapOne from "../Maps/MapOne";
+import MapEmbedComponent from "../Maps/MapEmbedComponent";
 
 const ECommerce: React.FC = () => {
   return (
@@ -55,10 +57,8 @@ const ECommerce: React.FC = () => {
         {/* Box 2: Image */}
         <div className="w-full md:w-1/2 px-2 mb-4">
         <div className="bg-white shadow-md rounded-md p-4 h-full flex flex-col justify-center">
-        <img
-              src="https://via.placeholder.com/600x400"
-              className="w-full h-48 object-cover"
-            />
+                    <MapEmbedComponent />
+
           </div>
         </div>
 

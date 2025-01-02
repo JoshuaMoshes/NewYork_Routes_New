@@ -58,6 +58,10 @@ const ChartTwo: React.FC = () => {
   // Loading indicator
   const [isLoading, setIsLoading] = useState(false);
 
+  // Array of abbreviated month names for consistent UTC formatting
+  const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
   // ---------------------------------------------------
   // B) Fetch + Combine data
   // ---------------------------------------------------
@@ -287,7 +291,7 @@ const ChartTwo: React.FC = () => {
   // G) ApexChart styling to match chartOne
   // ---------------------------------------------------
   // Define the timestamp for January 5, 2025
-  const jan5Timestamp = Date.UTC(2024, 11, 25); // Months are 0-indexed
+  const jan5Timestamp = Date.UTC(2025, 0, 5); // Months are 0-indexed
 
   // Check if data includes January 5, 2025 and at least one series is visible
   const hasJan5 =
@@ -365,6 +369,15 @@ const ChartTwo: React.FC = () => {
     tooltip: {
       x: {
         format: "MMM dd", // e.g. Dec 10
+        formatter: function (val) {
+          const date = new Date(val as number);
+          let day = String(date.getUTCDate()).padStart(2, '0'); // Ensures two-digit day
+          const month = monthNames[date.getUTCMonth()]; // UTC Month
+          if (day[0] == "0"){
+            day = day[1]
+          }
+          return `${day} ${month}`; // e.g., "01 Jan"
+        },
       },
       y: {
         formatter: (val) => (typeof val === 'number' ? `${val.toFixed(0)} min` : ''),
@@ -378,6 +391,15 @@ const ChartTwo: React.FC = () => {
       labels: {
         style: {
           fontSize: "12px",
+        },
+        formatter: function (value, timestamp, opts) {
+          const date = new Date(timestamp as number);
+          let day = String(date.getUTCDate()).padStart(2, '0'); // Ensures two-digit day
+          const month = monthNames[date.getUTCMonth()]; // UTC Month
+          if (day[0] == "0"){
+            day = day[1]
+          }
+          return `${day} ${month}`; // e.g., "01 Jan"
         },
       },
       // Removed tickAmount to let ApexCharts handle it automatically

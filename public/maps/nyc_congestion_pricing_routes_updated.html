@@ -1,0 +1,1817 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    
+        <script>
+            L_NO_TOUCH = false;
+            L_DISABLE_3D = false;
+        </script>
+    
+    <style>html, body {width: 100%;height: 100%;margin: 0;padding: 0;}</style>
+    <style>#map {position:absolute;top:0;bottom:0;right:0;left:0;}</style>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_740e294e09e1cbb70bce19a6e434225a {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+        
+</head>
+<body>
+    
+    <script>
+    function addHoverEffect() {
+        m.eachLayer(function(layer) {
+            if (layer instanceof L.Polyline && !(layer instanceof L.Polygon)) {
+                layer.on('mouseover', function(e) {
+                    this.setStyle({
+                        weight: 7,
+                        color: 'yellow'
+                    });
+                });
+                layer.on('mouseout', function(e) {
+                    this.setStyle({
+                        weight: 5,
+                        color: 'blue'
+                    });
+                });
+            }
+        });
+    }
+    addHoverEffect();
+    </script>
+    <script>
+    function addClickEffect() {
+        m.eachLayer(function(layer) {
+            if (layer instanceof L.Polyline && !(layer instanceof L.Polygon)) {
+                layer.on('click', function(e) {
+                    if (layer.options.outline) {
+                        // Outline already exists, remove it
+                        if (layer.outline) {
+                            m.removeLayer(layer.outline);
+                            layer.options.outline = false;
+                        }
+                    } else {
+                        // Add outline
+                        layer.outline = L.polyline(layer.getLatLngs(), {
+                            color: 'white',
+                            weight: layer.options.weight + 4,
+                            opacity: 1,
+                            clickable: false
+                        }).addTo(m);
+                        layer.options.outline = true;
+                    }
+                });
+            }
+        });
+    }
+    addClickEffect();
+    </script>
+    
+            <div class="folium-map" id="map_740e294e09e1cbb70bce19a6e434225a" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_740e294e09e1cbb70bce19a6e434225a = L.map(
+                "map_740e294e09e1cbb70bce19a6e434225a",
+                {
+                    center: [40.735508, -73.975308],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 12,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_53e99dcfac17d4d498279c6dab37dcea = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_53e99dcfac17d4d498279c6dab37dcea.addTo(map_740e294e09e1cbb70bce19a6e434225a);
+        
+    
+            var feature_group_4b879de5dad5215012346e3f3533f43d = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var poly_line_2bd6af11b22187d0d46134213432f701 = L.polyline(
+                [[40.76548, -73.97005], [40.76509, -73.96914], [40.76484, -73.96854], [40.76413, -73.96906], [40.76176, -73.97079], [40.76036, -73.97181], [40.7578, -73.97368], [40.75635, -73.97472], [40.75598, -73.97498], [40.75535, -73.97545], [40.75457, -73.97603], [40.75432, -73.97621], [40.75429, -73.97629], [40.75439, -73.97656], [40.75439, -73.9767], [40.75434, -73.9768], [40.75336, -73.97752], [40.75262, -73.97804], [40.75253, -73.97802], [40.75248, -73.97796], [40.75234, -73.97766], [40.75231, -73.97761], [40.75226, -73.97761], [40.75156, -73.97813], [40.75086, -73.97865], [40.75078, -73.97873], [40.75061, -73.9789], [40.75011, -73.97926], [40.74903, -73.98005], [40.74712, -73.98145], [40.74646, -73.98194], [40.74608, -73.98219], [40.74506, -73.98292], [40.74444, -73.98336], [40.74273, -73.98461], [40.74151, -73.9855], [40.74022, -73.98643], [40.73835, -73.98779], [40.73775, -73.9882], [40.73687, -73.98887], [40.73607, -73.98945], [40.73528, -73.99005], [40.73509, -73.99026], [40.73495, -73.99051], [40.73484, -73.9907], [40.73479, -73.99075], [40.73456, -73.99082], [40.73328, -73.9911], [40.73205, -73.99137], [40.73175, -73.99146], [40.73135, -73.99177], [40.73117, -73.99192], [40.73007, -73.99286], [40.72794, -73.99467], [40.72686, -73.99557], [40.72593, -73.99636], [40.72557, -73.99665], [40.72495, -73.99719], [40.72425, -73.99779], [40.72169, -73.99996], [40.72101, -74.00052], [40.71995, -74.00143], [40.71782, -74.00325], [40.71469, -74.00589], [40.71361, -74.00677], [40.71292, -74.00734], [40.71236, -74.00781], [40.71212, -74.00801], [40.7119, -74.00822], [40.71091, -74.0091], [40.71042, -74.00948], [40.70996, -74.00989], [40.70934, -74.0104], [40.70833, -74.01124], [40.70765, -74.01179], [40.70646, -74.01278], [40.70614, -74.01305], [40.70579, -74.01336], [40.70538, -74.0137], [40.70528, -74.01378], [40.70502, -74.01396], [40.70478, -74.01409], [40.70473, -74.01412]],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "blue", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.7, "smoothFactor": 1.0, "stroke": true, "weight": 5}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            poly_line_2bd6af11b22187d0d46134213432f701.bindTooltip(
+                `<div>
+                     Route 1: Lenox Hill to Battery Park
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var marker_d52b7acdccd8fd285ce1b7087dd3fc9a = L.marker(
+                [40.765489, -73.970055],
+                {
+}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            var icon_6b7b75d60e91c948203dd0dc2bef6e2a = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "circle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+            marker_d52b7acdccd8fd285ce1b7087dd3fc9a.setIcon(icon_6b7b75d60e91c948203dd0dc2bef6e2a);
+        
+    
+            marker_d52b7acdccd8fd285ce1b7087dd3fc9a.bindTooltip(
+                `<div>
+                     Start: Lenox Hill to Battery Park
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_49a1ea71c2a1b84f48ca2996820b23bc = L.circleMarker(
+                [40.765489, -73.970055],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            var marker_e91ddf9cdb8440bb5baf1f6d2c566e5c = L.marker(
+                [40.704719, -74.014092],
+                {
+}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            var icon_8372fe62ffa2139c69ca4056a20ab7d0 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "circle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+            marker_e91ddf9cdb8440bb5baf1f6d2c566e5c.setIcon(icon_8372fe62ffa2139c69ca4056a20ab7d0);
+        
+    
+            marker_e91ddf9cdb8440bb5baf1f6d2c566e5c.bindTooltip(
+                `<div>
+                     End: Lenox Hill to Battery Park
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_aafbe1299241b39706c6499bea76e537 = L.circleMarker(
+                [40.704719, -74.014092],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            var poly_line_f7d75557740c4014b146f9e34ef445a8 = L.polyline(
+                [[40.76591, -73.99468], [40.7649, -73.99224], [40.76316, -73.98817], [40.76207, -73.9856], [40.76184, -73.98506], [40.7614, -73.98399], [40.76112, -73.98331], [40.76016, -73.98098], [40.75957, -73.97964], [40.75904, -73.97839], [40.7574, -73.97449], [40.75517, -73.96919], [40.75394, -73.96629]],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "blue", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.7, "smoothFactor": 1.0, "stroke": true, "weight": 5}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            poly_line_f7d75557740c4014b146f9e34ef445a8.bindTooltip(
+                `<div>
+                     Route 2: Hell's Kitchen to Midtown East
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var marker_813e580e9d29bbce04e3dcf50a54c326 = L.marker(
+                [40.765949, -73.994651],
+                {
+}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            var icon_40e04adf98c5ecec759243c6c1c185cc = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "circle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+            marker_813e580e9d29bbce04e3dcf50a54c326.setIcon(icon_40e04adf98c5ecec759243c6c1c185cc);
+        
+    
+            marker_813e580e9d29bbce04e3dcf50a54c326.bindTooltip(
+                `<div>
+                     Start: Hell's Kitchen to Midtown East
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_dc23417759595a3f255526d990e86f30 = L.circleMarker(
+                [40.765949, -73.994651],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            var marker_1c934536568750b3b8be2a022637ca83 = L.marker(
+                [40.753916, -73.966308],
+                {
+}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            var icon_a4d833e7b1c6d644dcb97280397e3579 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "circle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+            marker_1c934536568750b3b8be2a022637ca83.setIcon(icon_a4d833e7b1c6d644dcb97280397e3579);
+        
+    
+            marker_1c934536568750b3b8be2a022637ca83.bindTooltip(
+                `<div>
+                     End: Hell's Kitchen to Midtown East
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_588a72622496351677599e30b330100d = L.circleMarker(
+                [40.753916, -73.966308],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            var poly_line_988b51b0cc5add62f5c63365a593d373 = L.polyline(
+                [[40.74892, -74.00701], [40.74867, -74.00649], [40.74829, -74.00559], [40.74743, -74.00355], [40.74578, -73.99963], [40.74254, -73.99192], [40.74185, -73.99032], [40.74147, -73.98936], [40.74045, -73.98697], [40.73815, -73.98151], [40.73665, -73.97798], [40.73552, -73.9753]],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "blue", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.7, "smoothFactor": 1.0, "stroke": true, "weight": 5}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            poly_line_988b51b0cc5add62f5c63365a593d373.bindTooltip(
+                `<div>
+                     Route 3: Chelsea to Kips Bay
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var marker_89bbe0ab09abff81ad97cb094864f7c9 = L.marker(
+                [40.748924, -74.00701],
+                {
+}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            var icon_39ed011a8784bc110b2883f8953dcc0d = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "circle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+            marker_89bbe0ab09abff81ad97cb094864f7c9.setIcon(icon_39ed011a8784bc110b2883f8953dcc0d);
+        
+    
+            marker_89bbe0ab09abff81ad97cb094864f7c9.bindTooltip(
+                `<div>
+                     Start: Chelsea to Kips Bay
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_528748f07c09a1860919aefb0c20a5ff = L.circleMarker(
+                [40.748924, -74.00701],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            var marker_977616345e4d4d17b70ea5c28e1e4a3f = L.marker(
+                [40.735508, -73.975308],
+                {
+}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            var icon_7cbb698f3b94ffdbd801acdc73d57624 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "circle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+            marker_977616345e4d4d17b70ea5c28e1e4a3f.setIcon(icon_7cbb698f3b94ffdbd801acdc73d57624);
+        
+    
+            marker_977616345e4d4d17b70ea5c28e1e4a3f.bindTooltip(
+                `<div>
+                     End: Chelsea to Kips Bay
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_a10aedd13a14c6d7ee13c98d153675ec = L.circleMarker(
+                [40.735508, -73.975308],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            var poly_line_6161e76f9e58a56d8c8ef5286ac12b2c = L.polyline(
+                [[40.73116, -74.00893], [40.73082, -74.00534], [40.73084, -74.0052], [40.73127, -74.0038], [40.73147, -74.00314], [40.73114, -74.00295], [40.73121, -74.00274], [40.73137, -74.0023], [40.73144, -74.00208], [40.73162, -74.00158], [40.73178, -74.00113], [40.73172, -74.00095], [40.73227, -74.00056], [40.73275, -74.00021], [40.73393, -73.99935], [40.73462, -73.99884], [40.73479, -73.99872], [40.73457, -73.99818], [40.73401, -73.99684], [40.73371, -73.99615], [40.73281, -73.99398], [40.73175, -73.99146], [40.731, -73.98967], [40.73076, -73.98914], [40.73012, -73.98762], [40.72964, -73.98648], [40.72878, -73.98445], [40.72557, -73.97681], [40.72505, -73.97554], [40.72488, -73.97517], [40.7237, -73.97603], [40.72357, -73.97613]],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "blue", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.7, "smoothFactor": 1.0, "stroke": true, "weight": 5}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            poly_line_6161e76f9e58a56d8c8ef5286ac12b2c.bindTooltip(
+                `<div>
+                     Route 4: Greenwich Village to Alphabet City
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var marker_61f173aa745ccf3abde5b079e759f7f2 = L.marker(
+                [40.73114, -74.008961],
+                {
+}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            var icon_ec39c271bd2356175ea8ea7b5621e9de = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "circle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+            marker_61f173aa745ccf3abde5b079e759f7f2.setIcon(icon_ec39c271bd2356175ea8ea7b5621e9de);
+        
+    
+            marker_61f173aa745ccf3abde5b079e759f7f2.bindTooltip(
+                `<div>
+                     Start: Greenwich Village to Alphabet City
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_fa5c7622c36ac0d200f8805069146a00 = L.circleMarker(
+                [40.73114, -74.008961],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            var marker_bb13c5870d8c145f8969481541cf1a40 = L.marker(
+                [40.723604, -73.976207],
+                {
+}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            var icon_cb3bbcf83a5df8c447cac63f1b3fdc99 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "circle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+            marker_bb13c5870d8c145f8969481541cf1a40.setIcon(icon_cb3bbcf83a5df8c447cac63f1b3fdc99);
+        
+    
+            marker_bb13c5870d8c145f8969481541cf1a40.bindTooltip(
+                `<div>
+                     End: Greenwich Village to Alphabet City
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_2e571f8a5c0d6d34cb3bbe0f609415db = L.circleMarker(
+                [40.723604, -73.976207],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            var poly_line_e2a19bc1df45a2878ec285fc72507e65 = L.polyline(
+                [[40.72353, -74.01042], [40.72361, -74.01115], [40.72363, -74.01137], [40.72396, -74.0113], [40.72418, -74.01126], [40.72428, -74.01124], [40.72426, -74.0111], [40.72424, -74.01092], [40.72418, -74.01023], [40.72404, -74.00879], [40.72401, -74.00842], [40.72384, -74.00818], [40.72369, -74.00797], [40.72347, -74.00768], [40.72234, -74.0061], [40.7219, -74.0055], [40.72181, -74.00534], [40.72179, -74.00523], [40.72167, -74.00508], [40.72151, -74.00485], [40.72137, -74.00465], [40.72056, -74.00351], [40.72039, -74.00327], [40.7209, -74.00283], [40.72117, -74.00259], [40.72149, -74.00233], [40.72163, -74.00221], [40.72136, -74.00166], [40.7209, -74.00071], [40.7208, -74.00054], [40.72045, -73.99985], [40.72016, -73.99929], [40.71979, -73.99852], [40.71962, -73.99809], [40.71945, -73.99765], [40.71935, -73.9973], [40.7192, -73.99691], [40.71908, -73.99647], [40.7188, -73.9957], [40.71836, -73.99448], [40.71816, -73.99384], [40.71766, -73.99223], [40.71674, -73.98915], [40.71663, -73.98895], [40.71657, -73.98877], [40.71638, -73.98814], [40.71621, -73.98754], [40.71612, -73.98724], [40.71606, -73.98713], [40.71594, -73.98676], [40.71568, -73.98594], [40.71533, -73.98479], [40.71492, -73.98345], [40.71481, -73.98307], [40.71467, -73.98248], [40.71426, -73.98104], [40.71397, -73.98007], [40.71379, -73.97948], [40.71375, -73.97957], [40.71369, -73.9797], [40.71362, -73.98034], [40.71357, -73.98075], [40.71356, -73.98086], [40.71346, -73.98085]],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "blue", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.7, "smoothFactor": 1.0, "stroke": true, "weight": 5}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            poly_line_e2a19bc1df45a2878ec285fc72507e65.bindTooltip(
+                `<div>
+                     Route 5: Tribeca to Lower East Side
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var marker_e91b91d8643c448563f86afd4d6d991c = L.marker(
+                [40.723516, -74.010427],
+                {
+}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            var icon_a68d67ddea653badb07079271cdec1be = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "circle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+            marker_e91b91d8643c448563f86afd4d6d991c.setIcon(icon_a68d67ddea653badb07079271cdec1be);
+        
+    
+            marker_e91b91d8643c448563f86afd4d6d991c.bindTooltip(
+                `<div>
+                     Start: Tribeca to Lower East Side
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_dc4e7484b6eeb5fda5b5427151eae249 = L.circleMarker(
+                [40.723516, -74.010427],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            var marker_0bd8a4118d7c0e3a1a91e459c2097732 = L.marker(
+                [40.713464, -73.980869],
+                {
+}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            var icon_a652aa195bd4c959514031737c85d083 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "circle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+            marker_0bd8a4118d7c0e3a1a91e459c2097732.setIcon(icon_a652aa195bd4c959514031737c85d083);
+        
+    
+            marker_0bd8a4118d7c0e3a1a91e459c2097732.bindTooltip(
+                `<div>
+                     End: Tribeca to Lower East Side
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_0c753f8b771865a6f682617750605a70 = L.circleMarker(
+                [40.713464, -73.980869],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            var poly_line_18e5456f22d510fa1d368ba9e9452c6c = L.polyline(
+                [[40.76405, -74.02394], [40.76436, -74.02361], [40.76446, -74.02353], [40.76474, -74.02333], [40.76491, -74.02322], [40.76497, -74.02319], [40.76517, -74.02319], [40.76542, -74.02326], [40.76546, -74.02323], [40.76557, -74.02302], [40.76602, -74.02267], [40.76637, -74.02232], [40.76653, -74.02209], [40.76668, -74.02178], [40.76682, -74.02132], [40.76687, -74.02105], [40.76689, -74.02064], [40.76686, -74.02031], [40.76682, -74.02005], [40.76673, -74.01976], [40.76658, -74.0194], [40.76566, -74.01722], [40.7653, -74.01639], [40.7646, -74.01485], [40.7641, -74.01372], [40.76229, -74.00951], [40.76007, -74.00425], [40.75852, -74.00063], [40.75815, -73.99973], [40.75748, -73.99817], [40.75722, -73.99748], [40.75715, -73.99716], [40.75714, -73.99708]],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "blue", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.7, "smoothFactor": 1.0, "stroke": true, "weight": 5}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            poly_line_18e5456f22d510fa1d368ba9e9452c6c.bindTooltip(
+                `<div>
+                     Route 6: Lincoln Tunnel (In Manhattan Direction)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var marker_cf54b00773d16d12ea38b876b7170dfe = L.marker(
+                [40.764071, -74.023982],
+                {
+}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            var icon_20f1d2ba1f4ca21b12b1268b2a65d057 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "circle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+            marker_cf54b00773d16d12ea38b876b7170dfe.setIcon(icon_20f1d2ba1f4ca21b12b1268b2a65d057);
+        
+    
+            marker_cf54b00773d16d12ea38b876b7170dfe.bindTooltip(
+                `<div>
+                     Start: Lincoln Tunnel (In Manhattan Direction)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_8e45aad7f5bd0270c0a36bee50a096e0 = L.circleMarker(
+                [40.764071, -74.023982],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            var marker_949d34542e120ff8ac7f65f6c4d3b92b = L.marker(
+                [40.757116, -73.997095],
+                {
+}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            var icon_e1f6d032f09ce7d2f36c277a83ffe0a9 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "circle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+            marker_949d34542e120ff8ac7f65f6c4d3b92b.setIcon(icon_e1f6d032f09ce7d2f36c277a83ffe0a9);
+        
+    
+            marker_949d34542e120ff8ac7f65f6c4d3b92b.bindTooltip(
+                `<div>
+                     End: Lincoln Tunnel (In Manhattan Direction)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_a65cdfc7106f45e0ec155d2063b51477 = L.circleMarker(
+                [40.757116, -73.997095],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            var poly_line_d68f79e8f3a51321c4b5e12329aae2d9 = L.polyline(
+                [[40.73074, -74.05059], [40.73081, -74.05029], [40.73085, -74.05], [40.73087, -74.04969], [40.73085, -74.04903], [40.73082, -74.04834], [40.73081, -74.04802], [40.73074, -74.04712], [40.73067, -74.04632], [40.73062, -74.04596], [40.73059, -74.04543], [40.73046, -74.04467], [40.73046, -74.04441], [40.73041, -74.0439], [40.73026, -74.04231], [40.73019, -74.04158], [40.73014, -74.04105], [40.73011, -74.04087], [40.73007, -74.04077], [40.73005, -74.04055], [40.7299, -74.03916], [40.72981, -74.03817], [40.72979, -74.03759], [40.72978, -74.03712], [40.7298, -74.03682], [40.72977, -74.03646], [40.72966, -74.03588], [40.72914, -74.03361], [40.72881, -74.03211], [40.72874, -74.03148], [40.72826, -74.02605], [40.72806, -74.02478], [40.7277, -74.02258], [40.72681, -74.01742], [40.72667, -74.01647], [40.72656, -74.01534], [40.72632, -74.01286], [40.72623, -74.01225], [40.72609, -74.01173], [40.72602, -74.01152], [40.72584, -74.01111], [40.72563, -74.01075], [40.72529, -74.01027], [40.72512, -74.01004], [40.72403, -74.00851], [40.72368, -74.00808], [40.72342, -74.00784], [40.72301, -74.00728], [40.72264, -74.00676], [40.72252, -74.00662], [40.72244, -74.00656], [40.72233, -74.00652], [40.72222, -74.00651], [40.72204, -74.00654], [40.72184, -74.00664], [40.72176, -74.00673], [40.72171, -74.00683], [40.72165, -74.00706], [40.72164, -74.00744], [40.7216, -74.00768], [40.72152, -74.00783], [40.72136, -74.00797], [40.72125, -74.008], [40.72119, -74.008], [40.72115, -74.008], [40.72104, -74.00794], [40.7209, -74.00799], [40.7208, -74.00801], [40.72074, -74.00808], [40.72071, -74.00821], [40.72069, -74.00846], [40.72127, -74.00836], [40.72133, -74.00831], [40.72164, -74.00825], [40.72223, -74.00816], [40.72298, -74.00804], [40.72333, -74.00798], [40.72335, -74.00796], [40.72338, -74.00793], [40.72344, -74.00785], [40.72346, -74.00779], [40.72347, -74.00768], [40.7225, -74.00631], [40.72227, -74.00635]],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "blue", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.7, "smoothFactor": 1.0, "stroke": true, "weight": 5}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            poly_line_d68f79e8f3a51321c4b5e12329aae2d9.bindTooltip(
+                `<div>
+                     Route 7: Holland Tunnel (In Manhattan Direction)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var marker_0ee3a47669347c4dd9776ea82f95a0e4 = L.marker(
+                [40.730673, -74.050552],
+                {
+}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            var icon_4b6810ad0010c0bc1b68623479f3388e = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "circle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+            marker_0ee3a47669347c4dd9776ea82f95a0e4.setIcon(icon_4b6810ad0010c0bc1b68623479f3388e);
+        
+    
+            marker_0ee3a47669347c4dd9776ea82f95a0e4.bindTooltip(
+                `<div>
+                     Start: Holland Tunnel (In Manhattan Direction)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_d3bcdf6f34284e5e601e0dcb2aa9b619 = L.circleMarker(
+                [40.730673, -74.050552],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            var marker_2c655e07b9cbf03a062182f56ed21e09 = L.marker(
+                [40.722273, -74.006297],
+                {
+}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            var icon_4819eac6786a043dfbfc5b98cffb8ad6 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "circle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+            marker_2c655e07b9cbf03a062182f56ed21e09.setIcon(icon_4819eac6786a043dfbfc5b98cffb8ad6);
+        
+    
+            marker_2c655e07b9cbf03a062182f56ed21e09.bindTooltip(
+                `<div>
+                     End: Holland Tunnel (In Manhattan Direction)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_e07f7f550cb752856cdbe9d63ae4194c = L.circleMarker(
+                [40.722273, -74.006297],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            var poly_line_8e15382842c41d5b0acb6f70911168da = L.polyline(
+                [[40.67779, -74.002], [40.67832, -74.00241], [40.67863, -74.00266], [40.67908, -74.003], [40.67923, -74.0031], [40.67932, -74.00311], [40.67936, -74.00315], [40.6795, -74.00325], [40.67977, -74.00349], [40.6801, -74.00377], [40.68013, -74.00389], [40.68021, -74.00417], [40.68023, -74.00421], [40.6804, -74.00438], [40.68046, -74.00443], [40.6805, -74.00454], [40.68093, -74.00486], [40.68157, -74.00531], [40.68184, -74.00549], [40.68197, -74.00556], [40.68221, -74.0057], [40.68249, -74.00583], [40.68314, -74.00603], [40.68352, -74.00615], [40.68416, -74.00644], [40.68434, -74.00652], [40.68468, -74.00671], [40.68616, -74.00762], [40.68661, -74.00795], [40.68693, -74.00818], [40.68746, -74.00861], [40.68839, -74.00937], [40.68948, -74.01025], [40.6904, -74.01095], [40.69096, -74.0113], [40.69128, -74.0115], [40.69196, -74.01183], [40.6923, -74.01196], [40.6931, -74.01227], [40.69334, -74.01236], [40.69413, -74.01265], [40.69715, -74.01377], [40.69759, -74.01393], [40.69828, -74.01421], [40.69922, -74.01456], [40.69949, -74.01467], [40.69999, -74.01491], [40.70113, -74.01555], [40.70131, -74.01559], [40.70165, -74.01563], [40.70212, -74.01569], [40.70247, -74.01569], [40.7031, -74.01566], [40.7033, -74.01563], [40.70399, -74.01547], [40.70445, -74.01535], [40.70487, -74.01519], [40.7061, -74.01472], [40.70636, -74.01462], [40.7065, -74.01458], [40.70663, -74.01458], [40.70677, -74.01461], [40.70701, -74.01473], [40.70713, -74.01483], [40.70718, -74.01488], [40.70731, -74.01505], [40.70731, -74.01519], [40.70733, -74.01525], [40.70734, -74.01531], [40.70734, -74.01545], [40.70731, -74.01567], [40.7072, -74.016], [40.70711, -74.01604], [40.70693, -74.01611], [40.70646, -74.01628], [40.70616, -74.01641], [40.70512, -74.01682], [40.70489, -74.01691], [40.70483, -74.01693], [40.70483, -74.01679], [40.70479, -74.01669], [40.70479, -74.01652], [40.70482, -74.01593], [40.70483, -74.01561], [40.70479, -74.01533]],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "blue", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.7, "smoothFactor": 1.0, "stroke": true, "weight": 5}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            poly_line_8e15382842c41d5b0acb6f70911168da.bindTooltip(
+                `<div>
+                     Route 8: Huel L Cary Tunnel (In Manhattan Direction)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var marker_d41ee2c8fdd8e76c505e5213e3e523ff = L.marker(
+                [40.677799, -74.001984],
+                {
+}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            var icon_4bf1400bcafaa92f69747b97f45c4aa8 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "circle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+            marker_d41ee2c8fdd8e76c505e5213e3e523ff.setIcon(icon_4bf1400bcafaa92f69747b97f45c4aa8);
+        
+    
+            marker_d41ee2c8fdd8e76c505e5213e3e523ff.bindTooltip(
+                `<div>
+                     Start: Huel L Cary Tunnel (In Manhattan Direction)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_a7e817ec4a37b7535f0763e4e9d2a053 = L.circleMarker(
+                [40.677799, -74.001984],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            var marker_3160eb08cb77c12106d0c6b19f56f241 = L.marker(
+                [40.704512, -74.015304],
+                {
+}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            var icon_a1dfad86611bce0ecccd13da7aa42425 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "circle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+            marker_3160eb08cb77c12106d0c6b19f56f241.setIcon(icon_a1dfad86611bce0ecccd13da7aa42425);
+        
+    
+            marker_3160eb08cb77c12106d0c6b19f56f241.bindTooltip(
+                `<div>
+                     End: Huel L Cary Tunnel (In Manhattan Direction)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_a978b6551c012784111ae1faec9335d5 = L.circleMarker(
+                [40.704512, -74.015304],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            var poly_line_43c02faad6173576a1adf3f7bbfe5c76 = L.polyline(
+                [[40.7005, -73.9895], [40.70088, -73.99012], [40.70161, -73.99105], [40.70482, -73.99508], [40.71087, -74.00269]],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "blue", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.7, "smoothFactor": 1.0, "stroke": true, "weight": 5}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            poly_line_43c02faad6173576a1adf3f7bbfe5c76.bindTooltip(
+                `<div>
+                     Route 9: Brooklyn Bridge (In Manhattan Direction)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var marker_64625b2659755a21302948582cb73139 = L.marker(
+                [40.700468, -73.989526],
+                {
+}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            var icon_c55c8755bb2277a07a1cb9f9dfd65e7a = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "circle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+            marker_64625b2659755a21302948582cb73139.setIcon(icon_c55c8755bb2277a07a1cb9f9dfd65e7a);
+        
+    
+            marker_64625b2659755a21302948582cb73139.bindTooltip(
+                `<div>
+                     Start: Brooklyn Bridge (In Manhattan Direction)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_fc9ead258e5cd47acad57aa7314ac2e4 = L.circleMarker(
+                [40.700468, -73.989526],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            var marker_8ba0e67a2b1f6e259db29efa87f218fa = L.marker(
+                [40.710824, -74.002746],
+                {
+}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            var icon_7ec53f98e7f7a7d1604958428a477485 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "circle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+            marker_8ba0e67a2b1f6e259db29efa87f218fa.setIcon(icon_7ec53f98e7f7a7d1604958428a477485);
+        
+    
+            marker_8ba0e67a2b1f6e259db29efa87f218fa.bindTooltip(
+                `<div>
+                     End: Brooklyn Bridge (In Manhattan Direction)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_65ade7cd3042f170038972734b66f970 = L.circleMarker(
+                [40.710824, -74.002746],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            var poly_line_149ae71dca44934709d73d182d946b5a = L.polyline(
+                [[40.69918, -73.98611], [40.70462, -73.98915], [40.70882, -73.99151], [40.71168, -73.99311], [40.71434, -73.99458]],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "blue", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.7, "smoothFactor": 1.0, "stroke": true, "weight": 5}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            poly_line_149ae71dca44934709d73d182d946b5a.bindTooltip(
+                `<div>
+                     Route 10: Manhattan Bridge (In Manhattan Direction)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var marker_d6b5bd0c457642b15889a1f032ece2a7 = L.marker(
+                [40.699168, -73.986163],
+                {
+}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            var icon_d089a23b4faf315f7f3952b3ce3ebc10 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "circle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+            marker_d6b5bd0c457642b15889a1f032ece2a7.setIcon(icon_d089a23b4faf315f7f3952b3ce3ebc10);
+        
+    
+            marker_d6b5bd0c457642b15889a1f032ece2a7.bindTooltip(
+                `<div>
+                     Start: Manhattan Bridge (In Manhattan Direction)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_229d6d6d9ed77ade10270b525b891f92 = L.circleMarker(
+                [40.699168, -73.986163],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            var marker_7799b051c32822b1fa51d7a3620c4791 = L.marker(
+                [40.714353, -73.994605],
+                {
+}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            var icon_b2b3974f05f60aa289aae1e1e8347034 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "circle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+            marker_7799b051c32822b1fa51d7a3620c4791.setIcon(icon_b2b3974f05f60aa289aae1e1e8347034);
+        
+    
+            marker_7799b051c32822b1fa51d7a3620c4791.bindTooltip(
+                `<div>
+                     End: Manhattan Bridge (In Manhattan Direction)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_c87f6f40fbb386c62a9673dc46d4d39b = L.circleMarker(
+                [40.714353, -73.994605],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            var poly_line_bb0985f2c3bd90f1f9b2103af85ea455 = L.polyline(
+                [[40.71032, -73.96177], [40.71009, -73.96093], [40.71006, -73.96055], [40.71, -73.96046], [40.70996, -73.96013], [40.70993, -73.95996], [40.70976, -73.95943], [40.70968, -73.95921], [40.70962, -73.95903], [40.70955, -73.95886], [40.70981, -73.9587], [40.70997, -73.9586], [40.71015, -73.95865], [40.71033, -73.95876], [40.71033, -73.95887], [40.71032, -73.95904], [40.71029, -73.95937], [40.71026, -73.95969], [40.71023, -73.96009], [40.71026, -73.96047], [40.71032, -73.96084], [40.71033, -73.96096], [40.71036, -73.96114], [40.71048, -73.96156], [40.71061, -73.96199], [40.71068, -73.96221], [40.71092, -73.96301], [40.71109, -73.96354], [40.71154, -73.96504], [40.71159, -73.96524], [40.71167, -73.96532], [40.71185, -73.96597], [40.71226, -73.96732], [40.71307, -73.97001], [40.71346, -73.97131], [40.71452, -73.97482], [40.71553, -73.97809], [40.71561, -73.97842], [40.71581, -73.97909], [40.71653, -73.98147], [40.71721, -73.98372], [40.71753, -73.98476], [40.71782, -73.98572], [40.71812, -73.98652]],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "blue", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.7, "smoothFactor": 1.0, "stroke": true, "weight": 5}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            poly_line_bb0985f2c3bd90f1f9b2103af85ea455.bindTooltip(
+                `<div>
+                     Route 11: Williamsburg Bridge (In Manhattan Direction)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var marker_0edafda70abaf788b389933eeaf64b24 = L.marker(
+                [40.710305, -73.961775],
+                {
+}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            var icon_470086f170eb8d896e9f0820d21b1e44 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "circle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+            marker_0edafda70abaf788b389933eeaf64b24.setIcon(icon_470086f170eb8d896e9f0820d21b1e44);
+        
+    
+            marker_0edafda70abaf788b389933eeaf64b24.bindTooltip(
+                `<div>
+                     Start: Williamsburg Bridge (In Manhattan Direction)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_e1dcfe11c96ca6d999677d40236e238d = L.circleMarker(
+                [40.710305, -73.961775],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            var marker_fd9a99409790d2e17a5c7a051296e265 = L.marker(
+                [40.718125, -73.986514],
+                {
+}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            var icon_e4ebc93806455087cb1f70ec04db09e8 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "circle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+            marker_fd9a99409790d2e17a5c7a051296e265.setIcon(icon_e4ebc93806455087cb1f70ec04db09e8);
+        
+    
+            marker_fd9a99409790d2e17a5c7a051296e265.bindTooltip(
+                `<div>
+                     End: Williamsburg Bridge (In Manhattan Direction)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_9e1e98992a99f359ede825023504cfc3 = L.circleMarker(
+                [40.718125, -73.986514],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            var poly_line_31e082aa3c2c7446a44ba19c42a0c98a = L.polyline(
+                [[40.74148, -73.95215], [40.74154, -73.95302], [40.74156, -73.95394], [40.74154, -73.95453], [40.74154, -73.95488], [40.74158, -73.95539], [40.74168, -73.95594], [40.74183, -73.95672], [40.74206, -73.95787], [40.74229, -73.95885], [40.7426, -73.95997], [40.74279, -73.96047], [40.74315, -73.96106], [40.74569, -73.96458], [40.74644, -73.96561], [40.74737, -73.96691], [40.7476, -73.96725], [40.7478, -73.96767], [40.74794, -73.96805], [40.74808, -73.96868], [40.74812, -73.96908], [40.74813, -73.96933], [40.74807, -73.96974], [40.74801, -73.97], [40.74788, -73.97036], [40.74779, -73.97058], [40.74767, -73.97075], [40.74753, -73.97091], [40.74707, -73.97128], [40.74652, -73.97168], [40.74635, -73.97182], [40.74613, -73.97207], [40.74604, -73.97223], [40.74598, -73.97239], [40.74593, -73.97272], [40.74593, -73.97306], [40.74596, -73.97328], [40.74604, -73.97356], [40.74626, -73.97412], [40.74631, -73.97425], [40.74633, -73.97438], [40.74644, -73.97465], [40.74677, -73.97545], [40.74686, -73.97568], [40.74688, -73.97582], [40.74687, -73.97596], [40.74682, -73.9761], [40.74673, -73.97625], [40.74658, -73.97638], [40.74621, -73.97665], [40.74608, -73.97676], [40.74604, -73.97679], [40.74608, -73.97688], [40.74633, -73.97746], [40.7464, -73.97764], [40.74643, -73.97761], [40.74648, -73.97757], [40.74658, -73.97749], [40.74692, -73.97726], [40.74702, -73.97719], [40.74695, -73.97704], [40.74664, -73.97631], [40.74642, -73.97577], [40.74632, -73.97555], [40.74653, -73.97538]],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "blue", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.7, "smoothFactor": 1.0, "stroke": true, "weight": 5}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            poly_line_31e082aa3c2c7446a44ba19c42a0c98a.bindTooltip(
+                `<div>
+                     Route 12: Queens-Midtown Tunnel (In Manhattan Direction)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var marker_6c96b27c08c3c31c8f4e7a70f5f304f2 = L.marker(
+                [40.741413, -73.952151],
+                {
+}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            var icon_0256bf5ca1357de5e507788b81cfc8e6 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "circle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+            marker_6c96b27c08c3c31c8f4e7a70f5f304f2.setIcon(icon_0256bf5ca1357de5e507788b81cfc8e6);
+        
+    
+            marker_6c96b27c08c3c31c8f4e7a70f5f304f2.bindTooltip(
+                `<div>
+                     Start: Queens-Midtown Tunnel (In Manhattan Direction)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_74450e22ddac23b3e3e6a9523d3096f0 = L.circleMarker(
+                [40.741413, -73.952151],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            var marker_77152e4802f5e908e4c2694f1840ada3 = L.marker(
+                [40.746598, -73.975531],
+                {
+}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            var icon_66f37104cea34ebbb1b8a3380588349f = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "circle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+            marker_77152e4802f5e908e4c2694f1840ada3.setIcon(icon_66f37104cea34ebbb1b8a3380588349f);
+        
+    
+            marker_77152e4802f5e908e4c2694f1840ada3.bindTooltip(
+                `<div>
+                     End: Queens-Midtown Tunnel (In Manhattan Direction)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_cbdf195eb47ed4275e6a9e82d318e646 = L.circleMarker(
+                [40.746598, -73.975531],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            var poly_line_a573065a4b797170588ebab6a736df4a = L.polyline(
+                [[40.7502, -73.93896], [40.75081, -73.94047], [40.75174, -73.94259], [40.7523, -73.94384], [40.75299, -73.94542], [40.75411, -73.948], [40.75534, -73.95083], [40.75606, -73.95248], [40.7569, -73.95442], [40.75774, -73.95634], [40.75942, -73.96021], [40.75965, -73.96071], [40.75981, -73.96114], [40.76038, -73.96248], [40.76084, -73.96351], [40.76102, -73.96395], [40.76104, -73.96402], [40.76096, -73.96411], [40.76088, -73.96409], [40.76081, -73.96412], [40.76078, -73.9641]],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "blue", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.7, "smoothFactor": 1.0, "stroke": true, "weight": 5}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            poly_line_a573065a4b797170588ebab6a736df4a.bindTooltip(
+                `<div>
+                     Route 13: Queensboro Bridge (In Manhattan Direction)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var marker_1bb03ebccbf32576d5a6e77e35d9e0f1 = L.marker(
+                [40.75019, -73.938961],
+                {
+}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            var icon_66368ff7245c274a041d1c95d48bb7dd = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "circle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+            marker_1bb03ebccbf32576d5a6e77e35d9e0f1.setIcon(icon_66368ff7245c274a041d1c95d48bb7dd);
+        
+    
+            marker_1bb03ebccbf32576d5a6e77e35d9e0f1.bindTooltip(
+                `<div>
+                     Start: Queensboro Bridge (In Manhattan Direction)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_5247e551fcb5e98ad530fed52b46c29f = L.circleMarker(
+                [40.75019, -73.938961],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            var marker_a382c6351e3e8224419b5259960d3d8a = L.marker(
+                [40.760759, -73.964167],
+                {
+}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            var icon_ca6917948564835adf1dd4b83d28129c = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "circle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+            marker_a382c6351e3e8224419b5259960d3d8a.setIcon(icon_ca6917948564835adf1dd4b83d28129c);
+        
+    
+            marker_a382c6351e3e8224419b5259960d3d8a.bindTooltip(
+                `<div>
+                     End: Queensboro Bridge (In Manhattan Direction)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_def5e8a9d8c50877b733e6a75993feb9 = L.circleMarker(
+                [40.760759, -73.964167],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            var poly_line_222f5a07ac59325e7d86679c9f5cca78 = L.polyline(
+                [[40.75961, -73.95805], [40.7585, -73.95885], [40.75813, -73.95913], [40.7577, -73.95948], [40.7571, -73.96], [40.75664, -73.96037], [40.75612, -73.96076], [40.75594, -73.96092], [40.75583, -73.96105], [40.7556, -73.96136], [40.75522, -73.96187], [40.75506, -73.96206], [40.75482, -73.9623], [40.75453, -73.96255], [40.75426, -73.96278], [40.7539, -73.9631], [40.75336, -73.96357], [40.75196, -73.96493], [40.75175, -73.96513], [40.75036, -73.96628], [40.74808, -73.96813], [40.74692, -73.96911], [40.74623, -73.96983], [40.74576, -73.97031], [40.74551, -73.97055], [40.74522, -73.97077], [40.74493, -73.971], [40.74454, -73.97127], [40.74377, -73.97179], [40.74316, -73.97216], [40.74284, -73.97232], [40.74243, -73.97249], [40.7421, -73.97261], [40.74176, -73.97269], [40.74073, -73.9729], [40.73994, -73.97305], [40.73968, -73.9731], [40.73931, -73.97322], [40.73906, -73.97333], [40.73895, -73.9734], [40.73864, -73.97361], [40.73782, -73.97417], [40.73716, -73.97467], [40.7369, -73.97483], [40.73675, -73.9749], [40.73645, -73.975], [40.73612, -73.97506], [40.7358, -73.97506], [40.7353, -73.97495], [40.73431, -73.9747], [40.73177, -73.97405], [40.73144, -73.97392], [40.73118, -73.97377], [40.73092, -73.97356], [40.73066, -73.97329], [40.73033, -73.97288], [40.72966, -73.97228], [40.72941, -73.97208], [40.72914, -73.97191], [40.729, -73.97185], [40.72888, -73.97181], [40.72869, -73.97177], [40.72848, -73.97176], [40.72729, -73.97192], [40.72686, -73.97198], [40.72638, -73.97212], [40.72587, -73.97235], [40.72554, -73.97253], [40.72489, -73.97294], [40.72415, -73.9734], [40.72331, -73.97395], [40.72258, -73.97438], [40.72227, -73.97452], [40.72195, -73.97461], [40.72066, -73.97477], [40.71902, -73.97498], [40.7184, -73.97506], [40.71792, -73.97517], [40.71735, -73.97533], [40.71682, -73.97554], [40.7162, -73.97586], [40.71564, -73.97614], [40.71506, -73.97644], [40.71422, -73.97686], [40.7127, -73.97766], [40.71229, -73.97789], [40.71215, -73.97801], [40.71194, -73.97818], [40.71176, -73.97839], [40.71161, -73.97859], [40.71144, -73.97885], [40.71115, -73.97947], [40.71103, -73.9799], [40.71095, -73.9803], [40.71085, -73.9816], [40.71063, -73.98468], [40.71026, -73.98786], [40.7101, -73.98925], [40.70994, -73.99044], [40.70972, -73.9919], [40.70953, -73.99314], [40.7094, -73.99419], [40.70912, -73.99622], [40.70893, -73.99754], [40.70884, -73.99794], [40.70868, -73.99839], [40.7083, -73.99922], [40.70786, -74.0], [40.70689, -74.00187], [40.70606, -74.00331], [40.70427, -74.00609], [40.70328, -74.00768], [40.7026, -74.0088], [40.70242, -74.00909], [40.70212, -74.00965], [40.70206, -74.00977], [40.70206, -74.0099], [40.70206, -74.01005], [40.70192, -74.01062], [40.70162, -74.01193], [40.70155, -74.01251], [40.70157, -74.01255], [40.70172, -74.01266], [40.70202, -74.01274], [40.70244, -74.01285], [40.70238, -74.01299], [40.70236, -74.0137], [40.70239, -74.01377], [40.70215, -74.01384], [40.70205, -74.01397], [40.70201, -74.014], [40.70187, -74.01401], [40.70155, -74.01398], [40.70147, -74.01397], [40.70139, -74.01401], [40.7013, -74.01408], [40.70119, -74.01418], [40.70125, -74.01456]],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "blue", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.7, "smoothFactor": 1.0, "stroke": true, "weight": 5}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            poly_line_222f5a07ac59325e7d86679c9f5cca78.bindTooltip(
+                `<div>
+                     Route 14: FDR Drive (Upper East Side to Battery Park)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var marker_b3f5f9b5cd34bdeb296ee54eb0530722 = L.marker(
+                [40.759614, -73.958056],
+                {
+}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            var icon_de62ddb4e9509a17d6f19d0aeab915a2 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "circle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+            marker_b3f5f9b5cd34bdeb296ee54eb0530722.setIcon(icon_de62ddb4e9509a17d6f19d0aeab915a2);
+        
+    
+            marker_b3f5f9b5cd34bdeb296ee54eb0530722.bindTooltip(
+                `<div>
+                     Start: FDR Drive (Upper East Side to Battery Park)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_cc76a0e132bb6e9e9113c10b66431806 = L.circleMarker(
+                [40.759614, -73.958056],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            var marker_573afd5b281cb199a08e18adde73e893 = L.marker(
+                [40.702006, -74.015394],
+                {
+}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            var icon_612e8f206e919879ce63475a5ca42ecc = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "circle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+            marker_573afd5b281cb199a08e18adde73e893.setIcon(icon_612e8f206e919879ce63475a5ca42ecc);
+        
+    
+            marker_573afd5b281cb199a08e18adde73e893.bindTooltip(
+                `<div>
+                     End: FDR Drive (Upper East Side to Battery Park)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_0ee9a96348bdf78083de2aed58e5f6b9 = L.circleMarker(
+                [40.702006, -74.015394],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            var poly_line_b64aa041f81997e7ecdc49e58b412cb0 = L.polyline(
+                [[40.81982, -73.90154], [40.82127, -73.90091], [40.8221, -73.90056], [40.82249, -73.90213], [40.82273, -73.90313], [40.82109, -73.9038], [40.81848, -73.90487], [40.8181, -73.90501], [40.81777, -73.90501], [40.81746, -73.90504], [40.81631, -73.90514], [40.816, -73.90518], [40.81581, -73.90521], [40.81495, -73.90552], [40.81313, -73.90617], [40.81193, -73.90661], [40.81038, -73.90717], [40.80996, -73.90733], [40.80997, -73.9073], [40.80973, -73.90737], [40.80822, -73.9079], [40.80802, -73.90792], [40.80774, -73.90801], [40.80735, -73.90815], [40.80718, -73.90821], [40.80711, -73.90827], [40.80705, -73.90831], [40.80686, -73.90836], [40.80648, -73.90853], [40.80627, -73.90899], [40.80612, -73.90928], [40.80578, -73.90998], [40.80526, -73.91109], [40.80486, -73.91198], [40.80484, -73.91203], [40.80467, -73.91235], [40.80445, -73.91256], [40.80429, -73.91276], [40.80423, -73.91286], [40.80407, -73.91322], [40.8039, -73.91359], [40.80361, -73.91426], [40.80352, -73.91452], [40.80347, -73.91473], [40.80338, -73.91521], [40.80331, -73.91587], [40.80328, -73.91631], [40.80327, -73.91681], [40.80329, -73.91851], [40.80332, -73.91872], [40.80341, -73.91909], [40.80348, -73.91934], [40.80393, -73.92048], [40.80394, -73.9206], [40.80405, -73.92085], [40.80435, -73.92158], [40.8047, -73.92239], [40.80555, -73.9244], [40.80649, -73.9267], [40.80795, -73.93008], [40.80813, -73.93053], [40.80818, -73.93077], [40.80817, -73.93093], [40.80813, -73.93105], [40.80806, -73.93125], [40.80803, -73.93147], [40.80785, -73.93187], [40.80762, -73.93241], [40.80749, -73.9327], [40.80679, -73.93435], [40.8067, -73.93475], [40.80673, -73.93495], [40.80677, -73.93514], [40.80693, -73.93557], [40.8063, -73.93603], [40.80506, -73.93694], [40.80308, -73.93837], [40.79931, -73.94114], [40.79835, -73.94184], [40.79796, -73.94213], [40.79811, -73.94251], [40.79857, -73.94361], [40.79889, -73.94435], [40.79955, -73.94595], [40.79996, -73.94698], [40.79935, -73.94742], [40.79857, -73.94799], [40.79795, -73.94845], [40.7975, -73.94878], [40.79719, -73.94903], [40.79671, -73.94936], [40.79558, -73.95016], [40.79429, -73.95112], [40.7933, -73.95184], [40.79299, -73.95207], [40.7929, -73.95185], [40.79274, -73.95149], [40.79258, -73.95109], [40.79254, -73.951]],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "blue", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.7, "smoothFactor": 1.0, "stroke": true, "weight": 5}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            poly_line_b64aa041f81997e7ecdc49e58b412cb0.bindTooltip(
+                `<div>
+                     Route 15: Route 15 Name
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var marker_f4e03af9dcb40f0e321335a2f97c91e9 = L.marker(
+                [40.819818363026215, -73.90151245244198],
+                {
+}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            var icon_c08c44906dc17b502717e982aa9b7cb4 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "circle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+            marker_f4e03af9dcb40f0e321335a2f97c91e9.setIcon(icon_c08c44906dc17b502717e982aa9b7cb4);
+        
+    
+            marker_f4e03af9dcb40f0e321335a2f97c91e9.bindTooltip(
+                `<div>
+                     Start: Route 15 Name
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_f2ab6150a0ac437cb2aafc5f20e8c81e = L.circleMarker(
+                [40.819818363026215, -73.90151245244198],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            var marker_bf6a58b8c3c68f55ba167dae5c796cac = L.marker(
+                [40.79235945647402, -73.95113084471654],
+                {
+}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            var icon_6f96ee7a8e0d8b6a15b42639d16d46c2 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "circle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+            marker_bf6a58b8c3c68f55ba167dae5c796cac.setIcon(icon_6f96ee7a8e0d8b6a15b42639d16d46c2);
+        
+    
+            marker_bf6a58b8c3c68f55ba167dae5c796cac.bindTooltip(
+                `<div>
+                     End: Route 15 Name
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_a7cf9e15cc41debda1705c8b97801a21 = L.circleMarker(
+                [40.79235945647402, -73.95113084471654],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            var poly_line_3d6996ce081044ff0525f7734f56c409 = L.polyline(
+                [[40.8333, -73.94112], [40.8327, -73.9397], [40.83269, -73.93968], [40.83258, -73.93972], [40.8325, -73.93978], [40.83218, -73.94], [40.83184, -73.94025], [40.83167, -73.94033], [40.83151, -73.94037], [40.83089, -73.94036], [40.83051, -73.94034], [40.83045, -73.94033], [40.83041, -73.94016], [40.83035, -73.94009], [40.83024, -73.93981], [40.8302, -73.93972], [40.83013, -73.93955], [40.82998, -73.93921], [40.82965, -73.93842], [40.82832, -73.93526], [40.82819, -73.93495], [40.82816, -73.93487], [40.8281, -73.93487], [40.828, -73.93487], [40.82796, -73.93487], [40.82798, -73.93476], [40.82801, -73.93466], [40.82803, -73.9346], [40.82806, -73.93439], [40.82812, -73.93368], [40.82826, -73.93175], [40.82827, -73.93166], [40.82829, -73.93147], [40.82824, -73.93145], [40.82812, -73.9314], [40.82798, -73.93135], [40.82763, -73.9313], [40.82731, -73.93135], [40.82709, -73.93138], [40.82662, -73.93139], [40.82638, -73.93139], [40.82595, -73.93136], [40.82546, -73.93134], [40.82536, -73.93135], [40.82533, -73.93146], [40.82509, -73.93139], [40.82501, -73.93137], [40.82486, -73.93137], [40.82476, -73.93132], [40.82437, -73.93124], [40.82407, -73.93123], [40.82382, -73.93121], [40.82349, -73.93119], [40.82331, -73.93118], [40.82209, -73.93107], [40.82077, -73.93095], [40.82041, -73.93091], [40.82024, -73.93077], [40.81989, -73.93055], [40.81974, -73.93053], [40.81954, -73.93045], [40.81941, -73.93039], [40.81934, -73.93037], [40.8192, -73.93036], [40.81882, -73.93044], [40.81841, -73.93057], [40.81744, -73.93088], [40.81714, -73.93096], [40.81687, -73.931], [40.81644, -73.93109], [40.81609, -73.93118], [40.81593, -73.93119], [40.81571, -73.93122], [40.81495, -73.93119], [40.81466, -73.93116], [40.81452, -73.93114], [40.81423, -73.93125], [40.81381, -73.9314], [40.8136, -73.93145], [40.81319, -73.93159], [40.81289, -73.93173], [40.8122, -73.93209], [40.81205, -73.93215], [40.81186, -73.93218], [40.81165, -73.93216], [40.81154, -73.93212], [40.81134, -73.932], [40.81111, -73.93183], [40.81062, -73.93119], [40.80984, -73.9302], [40.80939, -73.92958], [40.80934, -73.92951], [40.8092, -73.92967], [40.80868, -73.93035], [40.80838, -73.9308], [40.80803, -73.93147], [40.80785, -73.93187], [40.80762, -73.93241], [40.80749, -73.9327], [40.80679, -73.93435], [40.80671, -73.93442], [40.80663, -73.93455], [40.80658, -73.93464], [40.80646, -73.93477], [40.8063, -73.93486], [40.80615, -73.93486], [40.80603, -73.93484], [40.80595, -73.9348], [40.80583, -73.9347], [40.80576, -73.93461], [40.80562, -73.93434], [40.80533, -73.93365], [40.80483, -73.93245], [40.80476, -73.93234], [40.8047, -73.93229], [40.80463, -73.93228], [40.80441, -73.93244], [40.80408, -73.93268], [40.80343, -73.9331], [40.8029, -73.93348], [40.80208, -73.93407], [40.80083, -73.93499], [40.79686, -73.93789], [40.79535, -73.93899], [40.79447, -73.93963], [40.79344, -73.94039], [40.79283, -73.94082], [40.79217, -73.94131], [40.79123, -73.942], [40.79065, -73.9424], [40.79027, -73.9427], [40.78953, -73.94325], [40.78806, -73.94434], [40.78707, -73.94505], [40.78432, -73.94706], [40.78324, -73.94784], [40.78245, -73.94841], [40.78233, -73.94852], [40.78222, -73.94857], [40.78202, -73.94872], [40.7817, -73.94896], [40.78158, -73.94903], [40.78112, -73.94938], [40.78095, -73.94949], [40.78034, -73.94995], [40.77999, -73.95021], [40.77889, -73.95101], [40.7772, -73.95225], [40.77554, -73.95346], [40.7743, -73.95435], [40.77267, -73.95556], [40.77157, -73.95637], [40.76955, -73.95783], [40.76881, -73.95837], [40.76761, -73.95927], [40.76685, -73.95982], [40.76562, -73.96069], [40.76428, -73.96168], [40.76362, -73.96215], [40.76312, -73.96254], [40.76249, -73.96296], [40.76186, -73.96343], [40.76149, -73.96372]],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "blue", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.7, "smoothFactor": 1.0, "stroke": true, "weight": 5}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            poly_line_3d6996ce081044ff0525f7734f56c409.bindTooltip(
+                `<div>
+                     Route 17: Route 17 Name
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var marker_a7005633dbb8839303ebf8ac876e09e5 = L.marker(
+                [40.83324566837192, -73.94115725719209],
+                {
+}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            var icon_74dd33437b3c16ac8225ffab21ffe77e = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "circle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+            marker_a7005633dbb8839303ebf8ac876e09e5.setIcon(icon_74dd33437b3c16ac8225ffab21ffe77e);
+        
+    
+            marker_a7005633dbb8839303ebf8ac876e09e5.bindTooltip(
+                `<div>
+                     Start: Route 17 Name
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_5937924a89d1d42bace106277fae1e64 = L.circleMarker(
+                [40.83324566837192, -73.94115725719209],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            var marker_a4cadbe59b7430b102266baaa522e69a = L.marker(
+                [40.76150648992143, -73.96384626067942],
+                {
+}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            var icon_58ccb8f0f619de913c113af568c540c0 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "circle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+            marker_a4cadbe59b7430b102266baaa522e69a.setIcon(icon_58ccb8f0f619de913c113af568c540c0);
+        
+    
+            marker_a4cadbe59b7430b102266baaa522e69a.bindTooltip(
+                `<div>
+                     End: Route 17 Name
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_c418de775b80727197b878b814c23c0f = L.circleMarker(
+                [40.76150648992143, -73.96384626067942],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            var poly_line_48b450845bc9e6e71b5346e473c35a53 = L.polyline(
+                [[40.66071, -73.98739], [40.66179, -73.98818], [40.66246, -73.98867], [40.66282, -73.98898], [40.66309, -73.98926], [40.66335, -73.98958], [40.6637, -73.9901], [40.66393, -73.99047], [40.66417, -73.99087], [40.66439, -73.99122], [40.66449, -73.99125], [40.66454, -73.99133], [40.66468, -73.99153], [40.66479, -73.99171], [40.66499, -73.99205], [40.66508, -73.99218], [40.6652, -73.99223], [40.6654, -73.99257], [40.66556, -73.99284], [40.66598, -73.99358], [40.66647, -73.99437], [40.66669, -73.9947], [40.6668, -73.99483], [40.66738, -73.99531], [40.66785, -73.99573], [40.66844, -73.99622], [40.66863, -73.99635], [40.66889, -73.99651], [40.67037, -73.99748], [40.67178, -73.99837], [40.67253, -73.99884], [40.67292, -73.99913], [40.67302, -73.99919], [40.67309, -73.99924], [40.67321, -73.99924], [40.67344, -73.99938], [40.67382, -73.99964], [40.6747, -74.00018], [40.67472, -74.00027], [40.67506, -74.00048], [40.67559, -74.00074], [40.67592, -74.00087], [40.67623, -74.00097], [40.67644, -74.00104], [40.67713, -74.00146], [40.6774, -74.00163], [40.67797, -74.00201], [40.67873, -74.00262], [40.67932, -74.00311], [40.67942, -74.00319], [40.6795, -74.00325], [40.67961, -74.00325], [40.67975, -74.00325], [40.67981, -74.00324], [40.67998, -74.00318], [40.68133, -74.00253], [40.68291, -74.00178], [40.68392, -74.00128], [40.68469, -74.00092], [40.68643, -74.00009], [40.68918, -73.99875], [40.69046, -73.99812], [40.69123, -73.99778], [40.69129, -73.99801], [40.69137, -73.99818], [40.69145, -73.99846], [40.69151, -73.99858], [40.69164, -73.99875], [40.69185, -73.99894], [40.69203, -73.99906], [40.69218, -73.99913], [40.6924, -73.9992], [40.69266, -73.99924], [40.69292, -73.99924], [40.69324, -73.99921], [40.69357, -73.99914], [40.69363, -73.99912], [40.69368, -73.99914], [40.69371, -73.99913], [40.69379, -73.9991], [40.69392, -73.99905], [40.69429, -73.9989], [40.69495, -73.99859], [40.69717, -73.99754], [40.69941, -73.99647], [40.69963, -73.99634], [40.69994, -73.9961], [40.70035, -73.99563], [40.70062, -73.99521], [40.70088, -73.99476], [40.70114, -73.99425], [40.70139, -73.99354], [40.70154, -73.99301], [40.70159, -73.99278], [40.70164, -73.99244], [40.70167, -73.99211], [40.70169, -73.99162], [40.70167, -73.9912], [40.70161, -73.99042], [40.70145, -73.98942]],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "blue", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.7, "smoothFactor": 1.0, "stroke": true, "weight": 5}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            poly_line_48b450845bc9e6e71b5346e473c35a53.bindTooltip(
+                `<div>
+                     Route 19: Route 19 Name
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var marker_4c858d52741de5c7f655fec44fd59add = L.marker(
+                [40.66068849363373, -73.98743360389938],
+                {
+}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            var icon_f96e11ee085aa0b2db2e87f856b73b95 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "circle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+            marker_4c858d52741de5c7f655fec44fd59add.setIcon(icon_f96e11ee085aa0b2db2e87f856b73b95);
+        
+    
+            marker_4c858d52741de5c7f655fec44fd59add.bindTooltip(
+                `<div>
+                     Start: Route 19 Name
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_ed8fdeae5e3f372b87c1e102a15b807b = L.circleMarker(
+                [40.66068849363373, -73.98743360389938],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            var marker_0d0b0e4928171b6fd54b1faf951208b2 = L.marker(
+                [40.701448743709875, -73.98942108076434],
+                {
+}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            var icon_29e455baace662283c69eb376a2c717b = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "circle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+            marker_0d0b0e4928171b6fd54b1faf951208b2.setIcon(icon_29e455baace662283c69eb376a2c717b);
+        
+    
+            marker_0d0b0e4928171b6fd54b1faf951208b2.bindTooltip(
+                `<div>
+                     End: Route 19 Name
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_38a009c0177bb7295eda2afea18b7c2e = L.circleMarker(
+                [40.701448743709875, -73.98942108076434],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(feature_group_4b879de5dad5215012346e3f3533f43d);
+        
+    
+            feature_group_4b879de5dad5215012346e3f3533f43d.addTo(map_740e294e09e1cbb70bce19a6e434225a);
+        
+    
+            var feature_group_35f27f8347e0346ad7dcdcb21c181c0f = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var poly_line_36482950af910920d024fb8b2cd0b694 = L.polyline(
+                [[41.89399, -87.63396], [41.89401, -87.63274], [41.89403, -87.6326], [41.89404, -87.63163], [41.89404, -87.63119], [41.89366, -87.63118], [41.89343, -87.63117], [41.89243, -87.63115], [41.89122, -87.63112], [41.88861, -87.63106], [41.88732, -87.63101], [41.88708, -87.631], [41.8868, -87.63102], [41.8837, -87.63092], [41.87907, -87.63079], [41.87616, -87.63073], [41.87569, -87.63073], [41.87554, -87.6307], [41.87485, -87.63069], [41.87381, -87.63066], [41.87177, -87.6306], [41.87132, -87.63059], [41.87124, -87.63065], [41.87102, -87.63065], [41.87078, -87.63065], [41.87044, -87.63063], [41.86958, -87.6306], [41.86905, -87.63061], [41.86894, -87.63061], [41.86889, -87.63057], [41.86862, -87.63056], [41.86805, -87.63053], [41.86754, -87.6305], [41.86674, -87.63048], [41.86604, -87.63048], [41.86528, -87.63043], [41.86517, -87.63042], [41.8651, -87.63039], [41.86474, -87.63036], [41.86447, -87.63035], [41.86417, -87.63031], [41.86342, -87.63029], [41.86219, -87.63026], [41.8605, -87.63027], [41.85996, -87.63027], [41.8593, -87.63028], [41.85805, -87.63025], [41.85659, -87.63019], [41.85544, -87.63016], [41.85344, -87.63011], [41.85295, -87.63007], [41.85279, -87.63006], [41.8528, -87.62953], [41.85281, -87.62929], [41.85281, -87.62914], [41.85283, -87.62771], [41.8528, -87.62709], [41.85197, -87.62707], [41.85107, -87.62704], [41.85108, -87.62624], [41.85111, -87.6246], [41.85112, -87.62376], [41.85056, -87.62375], [41.85023, -87.62374], [41.84929, -87.62372], [41.8493, -87.62309]],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "blue", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.7, "smoothFactor": 1.0, "stroke": true, "weight": 5}
+            ).addTo(feature_group_35f27f8347e0346ad7dcdcb21c181c0f);
+        
+    
+            poly_line_36482950af910920d024fb8b2cd0b694.bindTooltip(
+                `<div>
+                     Route 18: Route 18 Name
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var marker_4832374f6fde0188cd39b699aed6b155 = L.marker(
+                [41.89399092601365, -87.63395734384841],
+                {
+}
+            ).addTo(feature_group_35f27f8347e0346ad7dcdcb21c181c0f);
+        
+    
+            var icon_14db2bd0aed24a27e13ea397b87d3581 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "circle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+            marker_4832374f6fde0188cd39b699aed6b155.setIcon(icon_14db2bd0aed24a27e13ea397b87d3581);
+        
+    
+            marker_4832374f6fde0188cd39b699aed6b155.bindTooltip(
+                `<div>
+                     Start: Route 18 Name
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_ed652bcdf8f0c50c6a32a8c295b233a6 = L.circleMarker(
+                [41.89399092601365, -87.63395734384841],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(feature_group_35f27f8347e0346ad7dcdcb21c181c0f);
+        
+    
+            var marker_04fcbbc737c12e0d7260dd6697eaf558 = L.marker(
+                [41.84951159926403, -87.62307459181761],
+                {
+}
+            ).addTo(feature_group_35f27f8347e0346ad7dcdcb21c181c0f);
+        
+    
+            var icon_b8246c0d37072b66130ae8406bdd444f = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "circle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+            marker_04fcbbc737c12e0d7260dd6697eaf558.setIcon(icon_b8246c0d37072b66130ae8406bdd444f);
+        
+    
+            marker_04fcbbc737c12e0d7260dd6697eaf558.bindTooltip(
+                `<div>
+                     End: Route 18 Name
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_859067ceef797a0eb4f4f1a1a84e2a49 = L.circleMarker(
+                [41.84951159926403, -87.62307459181761],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(feature_group_35f27f8347e0346ad7dcdcb21c181c0f);
+        
+    
+            feature_group_35f27f8347e0346ad7dcdcb21c181c0f.addTo(map_740e294e09e1cbb70bce19a6e434225a);
+        
+    
+            var feature_group_c719bcef797e7c782a49b2a4e10afd07 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var poly_line_929af243999d2b7b2ffec46a3c9b0088 = L.polyline(
+                [[42.34136, -71.12016], [42.34098, -71.11755], [42.34276, -71.11726], [42.34313, -71.1172], [42.34327, -71.1167], [42.34343, -71.1161], [42.34394, -71.11428], [42.34433, -71.11286], [42.34473, -71.11138], [42.34598, -71.10686], [42.34643, -71.10542], [42.34655, -71.10506], [42.34669, -71.10472], [42.34683, -71.10428], [42.34729, -71.10253], [42.3485, -71.09818], [42.34867, -71.0976], [42.34877, -71.09717], [42.34877, -71.09652], [42.34883, -71.09381], [42.34885, -71.09131], [42.34886, -71.09047], [42.34886, -71.09023], [42.3489, -71.09017], [42.34892, -71.09011], [42.34895, -71.08997], [42.34901, -71.08951], [42.34907, -71.08871], [42.34915, -71.08822], [42.34928, -71.0877], [42.34932, -71.0874], [42.34935, -71.08705], [42.34937, -71.0869], [42.34935, -71.08682], [42.34969, -71.08563], [42.35003, -71.08436], [42.3508, -71.08149], [42.352, -71.07706], [42.35269, -71.07452], [42.35328, -71.07232], [42.3535, -71.0715], [42.35308, -71.07129], [42.35268, -71.07109], [42.3523, -71.07091], [42.35208, -71.07079], [42.35194, -71.07071], [42.35198, -71.07058], [42.35208, -71.07013], [42.35243, -71.06849], [42.35258, -71.06778], [42.35265, -71.06767], [42.35281, -71.06758], [42.35333, -71.06784], [42.35477, -71.06864], [42.3555, -71.06905], [42.3556, -71.06911], [42.35567, -71.06909], [42.35577, -71.06913], [42.35596, -71.06923], [42.35605, -71.06927], [42.35613, -71.06927], [42.35625, -71.06927], [42.35638, -71.06856], [42.35656, -71.06771], [42.35671, -71.06705], [42.35704, -71.06558], [42.35724, -71.0647], [42.35732, -71.0644], [42.35745, -71.06401], [42.35764, -71.06341], [42.35779, -71.06304], [42.35801, -71.06243], [42.35825, -71.06176], [42.35829, -71.06154], [42.35825, -71.06135], [42.3581, -71.06078], [42.35804, -71.06055], [42.35796, -71.06037], [42.3578, -71.05975], [42.35753, -71.05872], [42.35743, -71.05832], [42.35753, -71.05821], [42.35771, -71.05808], [42.35778, -71.05802], [42.35798, -71.05791], [42.35818, -71.05787], [42.35884, -71.05783], [42.35892, -71.05824], [42.3591, -71.05897], [42.35926, -71.05942], [42.35941, -71.05966], [42.35957, -71.05975], [42.35963, -71.05977]],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "blue", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.7, "smoothFactor": 1.0, "stroke": true, "weight": 5}
+            ).addTo(feature_group_c719bcef797e7c782a49b2a4e10afd07);
+        
+    
+            poly_line_929af243999d2b7b2ffec46a3c9b0088.bindTooltip(
+                `<div>
+                     Route 16: Route 16 Name
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var marker_1dba966e1fc29ecd7d837fcf66f5cea5 = L.marker(
+                [42.34133854343414, -71.12016888395104],
+                {
+}
+            ).addTo(feature_group_c719bcef797e7c782a49b2a4e10afd07);
+        
+    
+            var icon_2b7601ae6a275adb74c4921b8644219d = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "circle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+            marker_1dba966e1fc29ecd7d837fcf66f5cea5.setIcon(icon_2b7601ae6a275adb74c4921b8644219d);
+        
+    
+            marker_1dba966e1fc29ecd7d837fcf66f5cea5.bindTooltip(
+                `<div>
+                     Start: Route 16 Name
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_13423e8066f6627f91ba434dc0c31bee = L.circleMarker(
+                [42.34133854343414, -71.12016888395104],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(feature_group_c719bcef797e7c782a49b2a4e10afd07);
+        
+    
+            var marker_f19b5139e74ee35b57f4a61dbd55913a = L.marker(
+                [42.35963142924736, -71.05970030395414],
+                {
+}
+            ).addTo(feature_group_c719bcef797e7c782a49b2a4e10afd07);
+        
+    
+            var icon_80797ec4a633f5ec46c9b58311a980a5 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "circle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+            marker_f19b5139e74ee35b57f4a61dbd55913a.setIcon(icon_80797ec4a633f5ec46c9b58311a980a5);
+        
+    
+            marker_f19b5139e74ee35b57f4a61dbd55913a.bindTooltip(
+                `<div>
+                     End: Route 16 Name
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_d929760c25074ca761031f2235d556db = L.circleMarker(
+                [42.35963142924736, -71.05970030395414],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(feature_group_c719bcef797e7c782a49b2a4e10afd07);
+        
+    
+            feature_group_c719bcef797e7c782a49b2a4e10afd07.addTo(map_740e294e09e1cbb70bce19a6e434225a);
+        
+    
+            var layer_control_09e421c28b0328a9ec60f13860885973_layers = {
+                base_layers : {
+                    "openstreetmap" : tile_layer_53e99dcfac17d4d498279c6dab37dcea,
+                },
+                overlays :  {
+                    "New York" : feature_group_4b879de5dad5215012346e3f3533f43d,
+                    "Chicago" : feature_group_35f27f8347e0346ad7dcdcb21c181c0f,
+                    "Boston" : feature_group_c719bcef797e7c782a49b2a4e10afd07,
+                },
+            };
+            let layer_control_09e421c28b0328a9ec60f13860885973 = L.control.layers(
+                layer_control_09e421c28b0328a9ec60f13860885973_layers.base_layers,
+                layer_control_09e421c28b0328a9ec60f13860885973_layers.overlays,
+                {
+  "position": "topright",
+  "collapsed": true,
+  "autoZIndex": true,
+}
+            ).addTo(map_740e294e09e1cbb70bce19a6e434225a);
+
+        
+</script>
+</html>
