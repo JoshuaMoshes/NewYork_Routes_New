@@ -32,8 +32,7 @@ const ECommerce: React.FC = () => {
               <div className="mt-4">
                 <p className="text-gray-700 text-sm">
                   {/* The chart above calculates the average traffic times prior to and after congestion pricing has begun for a chosen route and day of week. */}
-                  The chart above calculates the average traffic times prior to and after congestion pricing has begun for a chosen route and day of week. Routes 1-13 are located within or on a direct path to the Congestion Zone. Routes 14, 15, 17 and 19 are routes within New York City, but outside of the congestion zone. Routes 16 and 18 are in other cities.  For more information about routes, please see the “About the Congestion Pricing Tracker” section and Figure 2. 
-                </p>
+                  The chart above calculates the average traffic times prior to and after congestion pricing has begun for a chosen route and day of week. Routes 1-13 are located within or on a direct path to the Congestion Zone. Routes 14, 15, 17 and 19 are routes within New York City, but outside of the congestion zone. Routes 16 and 18 are in Boston and Chicago, respectively. For more information about routes, please see the “About the Congestion Pricing Tracker” section and Figure 2.                </p>
               </div>
             </div>
           </div>

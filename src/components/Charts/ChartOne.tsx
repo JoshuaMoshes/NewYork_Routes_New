@@ -62,7 +62,7 @@ const jan5thCutoff = parseDate(0, 5, 0, 0); // January is month 0
 const ChartOne: React.FC = () => {
   // Initialize selectedRoute to "1" and selectedDay to "Monday"
   const [selectedRoute, setSelectedRoute] = useState("1"); // Default to Route 1
-  const [selectedDay, setSelectedDay] = useState("Monday"); // Default to Monday
+  const [selectedDay, setSelectedDay] = useState("Sunday"); // Default to Monday
   const [seriesDataBefore, setSeriesDataBefore] = useState<number[]>([]);
   const [seriesDataAfter, setSeriesDataAfter] = useState<number[]>([]);
   const [zoomEnabled, setZoomEnabled] = useState(true);
@@ -329,7 +329,7 @@ const ChartOne: React.FC = () => {
           formatter: (val) => val.toFixed(0),
           style: { fontSize: "12px" },
         },
-        title: { text: "Average Commute (min)" },
+        title: { text: "Average Commute Time (min)" },
       },
       responsive: [
         {
