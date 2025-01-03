@@ -60,9 +60,8 @@ function parseDate(mm: number, dd: number, hh: number, mn: number) {
 const jan5thCutoff = parseDate(0, 5, 0, 0); // January is month 0
 
 const ChartOne: React.FC = () => {
-  // Initialize selectedRoute to "1" and selectedDay to "Monday"
-  const [selectedRoute, setSelectedRoute] = useState("1"); // Default to Route 1
-  const [selectedDay, setSelectedDay] = useState("Monday"); // Default to Monday
+  const [selectedRoute, setSelectedRoute] = useState("");
+  const [selectedDay, setSelectedDay] = useState("");
   const [seriesDataBefore, setSeriesDataBefore] = useState<number[]>([]);
   const [seriesDataAfter, setSeriesDataAfter] = useState<number[]>([]);
   const [zoomEnabled, setZoomEnabled] = useState(true);
@@ -88,7 +87,13 @@ const ChartOne: React.FC = () => {
   }, []);
 
   const fetchData = useCallback(async () => {
-    // Since selectedRoute and selectedDay have default values, proceed to fetch data
+    // Only fetch data if both route and day are selected
+    if (!selectedRoute || !selectedDay) {
+      setSeriesDataBefore([]);
+      setSeriesDataAfter([]);
+      return;
+    }
+
     setIsLoading(true);
     try {
       // Initialize two separate aggregators
@@ -129,6 +134,8 @@ const ChartOne: React.FC = () => {
             const hh = parseInt(hhStr, 10);
             const mn = parseInt(minStr, 10);
             const fullDate = parseDate(mm, dd, hh, mn);
+            // Remove or adjust existing cutoff checks if not needed
+            // if (fullDate >= excelCutoff) return;
             const weekdayIndex = fullDate.getDay();
             if (dayMap[weekdayIndex] !== selectedDay) return;
             const timeSlot = `${hhStr.padStart(2, "0")}:${minStr.padStart(2, "0")}`;
@@ -165,6 +172,8 @@ const ChartOne: React.FC = () => {
         const hh = parseInt(hhStr, 10);
         const mn = parseInt(minStr, 10);
         const fullDate = parseDate(mm, dd, hh, mn);
+        // Remove or adjust existing cutoff checks if not needed
+        // if (fullDate < firebaseCutoff) return;
         const weekdayIndex = fullDate.getDay();
         if (dayMap[weekdayIndex] !== selectedDay) return;
         const timeSlot = `${hhStr.padStart(2, "0")}:${minStr.padStart(2, "0")}`;
@@ -253,14 +262,17 @@ const ChartOne: React.FC = () => {
 
   // Memoize the options to handle dynamic noData.text
   const options: ApexOptions = useMemo(() => {
-    let noDataText = isLoading ? "Loading..." : "No Data";
-
-    if (selectedRoute && selectedDay && !isLoading) {
-      // Check if both series have no data (all zeros)
-      const hasDataBefore = seriesDataBefore.some((value) => value > 0);
-      const hasDataAfter = seriesDataAfter.some((value) => value > 0);
-      if (hasDataBefore || hasDataAfter) {
-        noDataText = "";
+    let noDataText = "Please select both route and day";
+    if (selectedRoute && selectedDay) {
+      if (isLoading) {
+        noDataText = "Loading...";
+      } else {
+        // Check if both series have no data (all zeros)
+        const hasDataBefore = seriesDataBefore.some((value) => value > 0);
+        const hasDataAfter = seriesDataAfter.some((value) => value > 0);
+        if (!hasDataBefore && !hasDataAfter) {
+          noDataText = "No Data";
+        }
       }
     }
 
@@ -382,6 +394,9 @@ const ChartOne: React.FC = () => {
             }}
             className="mx-2 border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-transparent"
           >
+            <option value="" disabled>
+              Select Route
+            </option>
             {routeOptions.map((route) => (
               <option key={route.value} value={route.value}>
                 {route.label}
@@ -398,6 +413,9 @@ const ChartOne: React.FC = () => {
             }}
             className="mx-2 border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-transparent"
           >
+            <option value="" disabled>
+              Select Day
+            </option>
             {daysOfWeek.map((day) => (
               <option key={day} value={day}>
                 {day}

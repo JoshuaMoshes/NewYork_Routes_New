@@ -15,10 +15,12 @@ const ECommerce: React.FC = () => {
         </h1>
 
         {/* Subheading */}
-        <h2 className="text-2xl font-semibold text-center mb-8">
+        <h3 className="font-semibold text-center mb-8">
+        Curious whether Congestion Pricing is having an impact on commutes in NYC?
+        <br />Take a look below to compare traffic data before and after Congestion Pricing begins on January 5th. 
           {/* Cool Text Here with Routes */}
           {/* <CommuteSentence /> */}
-        </h2>
+        </h3>
 
         {/* Charts Section */}
         <div className="flex flex-col -mx-2 mb-10">
@@ -29,7 +31,8 @@ const ECommerce: React.FC = () => {
               {/* Information Section for Chart One */}
               <div className="mt-4">
                 <p className="text-gray-700 text-sm">
-                  The chart above calculates the average traffic times prior to and after congestion pricing has begun for a chosen route and day of week.
+                  {/* The chart above calculates the average traffic times prior to and after congestion pricing has begun for a chosen route and day of week. */}
+                  The chart above calculates the average traffic times prior to and after congestion pricing has begun for a chosen route and day of week. Routes 1-13 are located within or on a direct path to the Congestion Zone. Routes 14, 15, 17 and 19 are routes within New York City, but outside of the congestion zone. Routes 16 and 18 are in other cities.  For more information about routes, please see the “About the Congestion Pricing Tracker” section and Figure 2. 
                 </p>
               </div>
             </div>
@@ -42,7 +45,8 @@ const ECommerce: React.FC = () => {
               {/* Information Section for Chart Two */}
               <div className="mt-4">
                 <p className="text-gray-700 text-sm">
-                  The chart above displays the average traffic for 5 routes in the Congestion Zone over time, before and after the start of congestion pricing.
+                {/* The chart above displays the average traffic for 5 routes in the Congestion Zone over time, before and after the start of congestion pricing. */}
+                The chart above displays the average traffic for five routes in the Congestion Zone over time, and the average traffic for two routes in Boston and Chicago before and after the start of congestion pricing.
                 </p>
               </div>
             </div>
@@ -56,11 +60,22 @@ const ECommerce: React.FC = () => {
             <div className="bg-white shadow-md rounded-md p-4 h-full flex flex-col">
               <h3 className="text-xl font-semibold mb-3">About Congestion Pricing</h3>
               <p className="text-gray-700 text-sm">
-                New York City is launching a congestion pricing program aimed at reducing traffic congestion in Manhattan below 60th Street. A base toll of $9 will be charged daily for vehicle entry into the congestion zone, with varying increased fees applied to small and large trucks, and a decreased fee for motorcycles.
+                {/* New York City is launching a congestion pricing program aimed at reducing traffic congestion in Manhattan below 60th Street. A base toll of $9 will be charged daily for vehicle entry into the congestion zone, with varying increased fees applied to small and large trucks, and a decreased fee for motorcycles.
                 <br /><br />
                 Fees are discounted by 75% during the off-peak hours of 9pm - 5am. Excluded from the toll are FDR Drive, the West Side Highway and the Hugh L. Carey Tunnel connecting to West Street. Aims of the program include reducing travel time and emissions, and raising money for the New York City transportation system.
                 <br /><br />
                 Figure 1 displays a map of the Congestion Zone in Manhattan. You can view full details of the program on the official NYC website here. You can view the bounds of the Congestion Zone in Figure 1.
+              */}
+              <br />
+              New York City is launching a congestion pricing program aimed at reducing traffic congestion in Manhattan below 60th Street. A base toll of $9 will be charged daily for vehicle entry into the congestion zone, with varying increased fees applied to small and large trucks, and a decreased fee for motorcycles.
+<br /><br />
+Fees are discounted by 75% during the off-peak hours of 9pm - 5am. Excluded from the toll are FDR Drive, the West Side Highway and the Hugh L. Carey Tunnel connecting to West Street. Aims of the program include reducing travel time and emissions, and raising money for the New York City transportation system.
+<br /><br />
+Figure 1 displays a map of the Congestion Zone in Manhattan. You can view full details of the program on the official NYC website{" "}
+<a href="https://portal.311.nyc.gov/article/?kanumber=KA-03612" target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-500 hover:text-blue-600  hover:underline transition-colors duration-200">here</a>. 
+
               </p>
             </div>
           </div>
@@ -85,7 +100,7 @@ const ECommerce: React.FC = () => {
                   href="https://www.nbcnewyork.com/news/local/visiting-the-big-apple-prepare-to-pay-more-if-you-drive-to-busiest-part-of-manhattan/6090591/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-gray-500 hover:text-blue-500 hover:underline transition-colors duration-200"
+                  className="text-blue-500 hover:text-blue-600  hover:underline transition-colors duration-200"
                 >
                   NBC New York
                 </a>
@@ -112,11 +127,19 @@ const ECommerce: React.FC = () => {
             <div className="bg-white shadow-md rounded-md p-4 h-full flex flex-col">
               <h3 className="text-xl font-semibold mb-3">About the Congestion Pricing Tracker</h3>
               <p className="text-gray-700 text-sm">
-                The Congestion Pricing Tracker was created to measure the impact of congestion pricing on vehicle travel times in New York City. To do this, we collected Google Maps traffic data for 19 routes, finding the shortest time to drive from Point A to Point B for every route for 15 minute intervals every day.
+                {/* The Congestion Pricing Tracker was created to measure the impact of congestion pricing on vehicle travel times in New York City. To do this, we collected Google Maps traffic data for 19 routes, finding the shortest time to drive from Point A to Point B for every route for 15 minute intervals every day.
                 <br /><br />
                 Most of the route data we have been collecting were ones directly affected by congestion pricing (Routes 1-13). Route 14 measures congestion on FDR drive, which is excluded from congestion pricing. Routes 15, 17 and 19 are routes within New York City, but outside of the congestion zone, to measure the effect of congestion pricing for those commutes.
                 <br /><br />
                 Routes 16 and 18 are control routes, running in Boston and Chicago, respectively, acting as a control. You can view the routes data was collected for in Figure 2. 
+               */}
+               <br />
+               The Congestion Pricing Tracker was created to measure the impact of congestion pricing on vehicle travel times in New York City. To do this, we collected Google Maps traffic data for 19 routes, finding the shortest time to drive from Point A to Point B for every route. We collected data points every 15 minutes for every route, resulting in 1824 data points a day.  
+<br /><br />
+Most of the route data we have been collecting were for routes directly affected by congestion pricing (Routes 1-13). Route 14 measures congestion on FDR drive, which is excluded from congestion pricing. Routes 15, 17 and 19 are routes within New York City, but outside of the congestion zone, to measure the effect of congestion pricing for those commutes.
+<br /><br />
+Routes 16 and 18 are control routes, running in Boston and Chicago, respectively, acting as a control. You can view the routes data was collected for in Figure 2.
+
               </p>
             </div>
           </div>

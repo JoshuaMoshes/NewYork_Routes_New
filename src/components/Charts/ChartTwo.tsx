@@ -266,7 +266,7 @@ const ChartTwo: React.FC = () => {
   // ---------------------------------------------------
   // E) Chart Title
   // ---------------------------------------------------
-  const chartTitle = "Commute times expected to be affected or not by congestion tolls";
+  const chartTitle = "Commute times before and after congestion pricing";
 
   // ---------------------------------------------------
   // F) Build final series to include both datasets
