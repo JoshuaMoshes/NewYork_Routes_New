@@ -1,22 +1,13 @@
 "use client";
 import React from "react";
-import Head from "next/head"; // Import Head from next/head
 import ChartOne from "@/components/Charts/ChartOne";
 import ChartTwo from "@/components/Charts/ChartTwo";
-import MapOne from "../Maps/MapOne";
 import MapEmbedComponent from "../Maps/MapEmbedComponent";
 import CommuteSentence from "../Charts/CommuteSentence";
 
 const ECommerce: React.FC = () => {
   return (
     <>
-      {/* Head Section to Change Favicon */}
-      <Head>
-        <link rel="icon" href="/images/favicon.ico" />
-        {/* You can also add other head elements here if needed */}
-        <title>Congestion Pricing Tracker</title>
-      </Head>
-
       <div className="container mx-auto px-2 py-6">
         {/* Title */}
         <h1 className="text-4xl font-bold text-center mb-3">
