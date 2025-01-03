@@ -24,18 +24,7 @@ const ECommerce: React.FC = () => {
 
         {/* Charts Section */}
         <div className="flex flex-col -mx-2 mb-10">
-          {/* Chart One */}
-          <div className="w-full px-2 mb-4">
-            <div className="bg-white shadow-md rounded-md p-4 h-full">
-              <ChartOne />
-              {/* Information Section for Chart One */}
-              <div className="mt-4">
-                <p className="text-gray-700 text-sm">
-                  {/* The chart above calculates the average traffic times prior to and after congestion pricing has begun for a chosen route and day of week. */}
-                  The chart above calculates the average traffic times prior to and after congestion pricing has begun for a chosen route and day of week. Routes 1-13 are located within or on a direct path to the Congestion Zone. Routes 14, 15, 17 and 19 are routes within New York City, but outside of the congestion zone. Routes 16 and 18 are in Boston and Chicago, respectively. For more information about routes, please see the “About the Congestion Pricing Tracker” section and Figure 2.                </p>
-              </div>
-            </div>
-          </div>
+
 
           {/* Chart Two */}
           <div className="w-full px-2 mb-4">
@@ -49,6 +38,21 @@ const ECommerce: React.FC = () => {
               </div>
             </div>
           </div>
+
+
+          {/* Chart One */}
+          <div className="w-full px-2 mb-4">
+            <div className="bg-white shadow-md rounded-md p-4 h-full">
+              <ChartOne />
+              {/* Information Section for Chart One */}
+              <div className="mt-4">
+                <p className="text-gray-700 text-sm">
+                  {/* The chart above calculates the average traffic times prior to and after congestion pricing has begun for a chosen route and day of week. */}
+                  The chart above calculates the average traffic times prior to and after congestion pricing has begun for a chosen route and day of week. Routes 1-13 are located within or on a direct path to the Congestion Zone. Routes 14, 15, 17 and 19 are routes within New York City, but outside of the congestion zone. Routes 16 and 18 are in Boston and Chicago, respectively. For more information about routes, please see the “About the Congestion Pricing Tracker” section and Figure 2.                </p>
+              </div>
+            </div>
+          </div>
+
         </div>
 
         {/* Boxes Container */}
