@@ -22,8 +22,8 @@ const notAffectedRoutes = [16, 18];
 // 2) We'll collect daily data from Excel & Firebase
 // ---------------------------------------------------
 // Define cutoff dates with correct years
-const excelCutoff = new Date(Date.UTC(2024, 11, 29, 5, 0));    // Dec 29, 2024 @ 5:00 UTC
-const firebaseCutoff = new Date(Date.UTC(2024, 11, 29, 5, 15)); // Dec 29, 2024 @ 5:15 UTC
+const excelCutoff = new Date(Date.UTC(2025, 0, 0, 0, 0));    // Dec 29, 2024 @ 5:00 UTC
+const firebaseCutoff = new Date(Date.UTC(2025, 0, 0, 0, 15)); // Dec 29, 2024 @ 5:15 UTC
 
 // Helper function to convert date to "YYYY-MM-DD"
 function toYMD(dt: Date) {
