@@ -4,6 +4,7 @@ import ChartOne from "@/components/Charts/ChartOne";
 import ChartTwo from "@/components/Charts/ChartTwo";
 import MapOne from "../Maps/MapOne";
 import MapEmbedComponent from "../Maps/MapEmbedComponent";
+import CommuteSentence from "../Charts/CommuteSentence";
 
 const ECommerce: React.FC = () => {
   return (
@@ -15,7 +16,8 @@ const ECommerce: React.FC = () => {
 
       {/* Subheading */}
       <h2 className="text-2xl font-semibold text-center mb-8">
-        Cool Text Here with Routes
+        {/* Cool Text Here with Routes */}
+        <CommuteSentence />
       </h2>
 
       {/* Charts Section */}
@@ -98,6 +100,8 @@ const ECommerce: React.FC = () => {
           </div>
         </div>
       </div>
+
+
     </div>
   );
 };

@@ -268,7 +268,7 @@ const ChartTwo: React.FC = () => {
   // ---------------------------------------------------
   // E) Chart Title
   // ---------------------------------------------------
-  const chartTitle = "Commute times on routes expected to be Affected or Not Affected by Congestion Pricing";
+  const chartTitle = "Commute times expected to be affected or not by congestion pricing";
 
   // ---------------------------------------------------
   // F) Build final series based on visibility
