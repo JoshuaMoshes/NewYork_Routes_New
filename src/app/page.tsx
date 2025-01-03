@@ -6,8 +6,9 @@ import React from "react";
 
 export const metadata: Metadata = {
   title:
-    "Next.js E-commerce Dashboard Page | NextAdmin - Next.js Dashboard Kit",
-  description: "This is Next.js Home page for NextAdmin Dashboard Kit",
+    "Congestion Pricing Tracker | Benjamin and Joshua Moshes",
+  description: "This project is run by Joshua Moshes and Benjamin Moshes, under the supervision of Brown University Professor Emily Oster",
+  authors: [{name: "Joshua Moshes", url:"CongestionPricingTracker.com"}]
 };
 
 export default function Home() {

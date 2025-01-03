@@ -5,15 +5,18 @@ import * as XLSX from "xlsx";
 import { db } from "@/app/firebase";
 import { collection, getDocs } from "firebase/firestore";
 
-/** Maps Sunday->0, Monday->1, etc. as returned by JS Date.getDay() */
+/** Sunday->0, Monday->1, etc. (JS Date.getDay()). */
 const dayMap = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
-/** Dropdown for picking a date from January 6 onward (you can add more). */
+/** Example date dropdown: adjust or expand as needed. */
 const dateOptions = [
+  "2024-12-22",
   "2024-12-23",
   "2024-12-24",
   "2024-12-25",
   "2024-12-26",
+  "2024-12-28",
+  "2024-12-29",
   "2024-12-31",
   "2025-01-01",
   "2025-01-05",
@@ -45,74 +48,74 @@ const dateOptions = [
   "2025-01-31",
 ];
 
-/** Routes 1..19 */
+/** Routes 1..19. */
 const routeOptions = Array.from({ length: 19 }, (_, i) => `${i + 1}`);
 
-/** All data before this date is considered pre-toll. */
-const january5Cutoff = new Date(2025, 0, 5); // 2025-01-05
+/**
+ * Cutoff for "pre-toll" vs "post-toll" data is 2025-01-05 (January 5, 2025).
+ * All data strictly before this date is considered "pre-toll" and thus only in Excel.
+ */
+const january5Cutoff = new Date(2025, 0, 5);
 
-/** Parse "YYYY-MM-DD" into a JavaScript Date. */
+/** Parse "YYYY-MM-DD" into a Date (midnight that day). Returns null on error. */
 function parseDateFromString(dateStr: string): Date | null {
   const parts = dateStr.split("-");
   if (parts.length !== 3) return null;
   const [yyyy, mm, dd] = parts.map((p) => parseInt(p, 10));
-  // Month is zero-based
+  if (isNaN(yyyy) || isNaN(mm) || isNaN(dd)) return null;
   return new Date(yyyy, mm - 1, dd);
 }
 
 /**
- * In your Excel rows, you have a date in "MM-DD" format plus a time, e.g. "18:15".
- * We'll generate a full date for 2025. If you need different year logic, adjust here.
+ * In your Excel data, date is "MM-DD" + time "HH:MM". 
+ * If month is 12 => treat as year 2024. If month is 01 => year 2025. 
+ * (Adjust if your data has additional months.)
  */
 function parseDateComponents(mm: number, dd: number, hh: number, mn: number) {
-  const year = mm === 11 ? 2024 : 2025; // December is 11 (zero-based)
-  const date = new Date(year, mm, dd, hh, mn);
-  // console.log(`Parsed Date Components: ${date.toISOString()}`);
-  return date;
+  // 11 => December 2024, 0 => January 2025, etc.
+  // If your real data covers more months, adjust logic accordingly.
+  const year = mm === 11 ? 2024 : 2025;
+  return new Date(year, mm, dd, hh, mn);
 }
 
 const CommuteSentence: React.FC = () => {
-  // First dropdown: user picks a day after Jan 5
+  // Dropdown #1: user picks a date
   const [selectedDate, setSelectedDate] = useState("2025-01-06");
 
-  // Second dropdown: user picks a route 1..19
+  // Dropdown #2: user picks a route
   const [selectedRoute, setSelectedRoute] = useState("1");
 
-  // Outputs in the sentence
+  // Display results
   const [differenceMinutes, setDifferenceMinutes] = useState(0);
   const [differenceWord, setDifferenceWord] = useState<"more" | "less">("more");
 
-  /**
-   * We'll do the following steps:
-   * 1) Figure out which weekday the user selected (e.g. Monday).
-   * 2) From Excel, gather all pre-toll rows that match that weekday.
-   *    - For each unique date (like 12-08, 12-15, etc.), we compute that date's average.
-   *    - Then we take the average of all those daily averages => preTollAvgOfAverages
-   * 3) From Excel + Firebase, gather all selected date rows to compute selectedDateAvg.
-   * 4) difference = selectedDateAvg - preTollAvgOfAverages
-   */
   const computeDifference = useCallback(async () => {
     console.log(`\nComputing difference for Date: ${selectedDate}, Route: ${selectedRoute}`);
+
+    // 1) Parse user-selected date, figure out weekday
     const userSelectedDateObj = parseDateFromString(selectedDate);
     if (!userSelectedDateObj) {
-      console.error("Invalid selected date format.");
+      console.error("Invalid selected date format:", selectedDate);
       return;
     }
-
-    // Which weekday is it? e.g. "Monday"
     const userWeekday = dayMap[userSelectedDateObj.getDay()];
-    console.log(`Selected Date Weekday: ${userWeekday}`);
+    console.log("Selected weekday:", userWeekday);
 
-    // For the final pre-toll average-of-averages (Excel only):
-    const preTollDailyAggregator: Record<string, { sum: number; count: number }> = {};
+    // Data structures
+    /**
+     * preTollDays => 
+     *   key: string = "YYYY-MM-DD" (each pre-toll day that matches the same weekday)
+     *   value: { sum: number; count: number }
+     * We'll build up day-by-day sums, then do an average per day, then average across days.
+     */
+    const preTollDays: Record<string, { sum: number; count: number }> = {};
 
-    // For the selected date average (Excel + Firebase):
-    let selectedDateSum = 0;
-    let selectedDateCount = 0;
+    /** aggregator for the EXACT selected day (whether from Excel or Firebase). */
+    let selectedDaySum = 0;
+    let selectedDayCount = 0;
 
-    /* --------------------------- PARSE EXCEL DATA --------------------------- */
+    /** -------------------- PARSE EXCEL -------------------- */
     try {
-      console.log("Fetching Excel data...");
       const resp = await fetch("/routes_all.xlsx");
       if (resp.ok) {
         const arrayBuffer = await resp.arrayBuffer();
@@ -120,181 +123,158 @@ const CommuteSentence: React.FC = () => {
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
         const rawRows: any[] = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-
-        // rawRows[0] = headers, rawRows.slice(1) = data
         if (rawRows.length > 1) {
+          // dataRows are all but the header
           const dataRows = rawRows.slice(1);
-          //   console.log(`Excel Data Rows Count: ${dataRows.length}`);
-          dataRows.forEach((row, index) => {
-            // row format (based on your example):
-            // 0: route number
-            // 1: date => "MM-DD"
-            // 2: "exact time" => e.g. "12-08-18-15-14" (not used directly)
-            // 3: time block => e.g. "18:15"
-            // 4: total minutes => e.g. 43
-            // 5: route path (maybe "via Park Ave ...")
-
-            const routeNum = String(row[0]).trim();
-            const dateStr = String(row[1]).trim(); // "MM-DD"
-            const timeBlock = String(row[3]).trim(); // "HH:MM"
-            const totalMins = Number(row[4]) || 0;
-
-            // Debugging: Log every N rows to avoid clutter
-            if (index % 50 === 0) {
-              //   console.log(`Excel Row ${index}: Route=${routeNum}, Date=${dateStr}, Time=${timeBlock}, Mins=${totalMins}`);
-            }
-
-            // If route doesn’t match user’s selected route, skip
+          dataRows.forEach((row) => {
+            // row: [routeNum, dateStr (MM-DD), ???, timeBlock, totalMins, directions?]
+            const routeNum = String(row[0] ?? "").trim();
             if (routeNum !== selectedRoute) return;
 
-            // Parse the date
+            const dateStr = String(row[1] ?? "").trim(); // "12-29", "01-01", etc.
+            if (!dateStr || !dateStr.includes("-")) return;
+
+            const timeBlock = String(row[3] ?? "").trim(); 
+            if (!timeBlock || timeBlock.toUpperCase() === "ERROR" || !timeBlock.includes(":")) {
+              // skip invalid time
+              return;
+            }
+
+            const trafficStr = String(row[4] ?? "").trim(); 
+            if (!trafficStr || trafficStr.toUpperCase() === "ERROR" || isNaN(+trafficStr)) {
+              // skip invalid traffic
+              return;
+            }
+            const totalMins = Number(trafficStr);
+            if (totalMins >= 100) {
+              // Stata: drop if traffic >= 100
+              return;
+            }
+
+            // parse date "MM-DD"
             const [mmStr, ddStr] = dateStr.split("-");
-            if (!mmStr || !ddStr) return;
             const mm = parseInt(mmStr, 10) - 1; // zero-based
             const dd = parseInt(ddStr, 10);
+            if (isNaN(mm) || isNaN(dd)) return;
 
-            // Parse the time block
-            const [hhStr, minStr] = timeBlock.split(":");
-            if (!hhStr || !minStr) return;
+            // parse time "HH:MM"
+            const [hhStr, mnStr] = timeBlock.split(":");
             const hh = parseInt(hhStr, 10);
-            const mn = parseInt(minStr, 10);
+            const mn = parseInt(mnStr, 10);
+            if (isNaN(hh) || isNaN(mn)) return;
 
             const fullDate = parseDateComponents(mm, dd, hh, mn);
 
-            // Determine the date key
-            const yyyy = fullDate.getFullYear();
-            const mmFormatted = (fullDate.getMonth() + 1).toString().padStart(2, "0");
-            const ddFormatted = fullDate.getDate().toString().padStart(2, "0");
-            const dateKey = `${yyyy}-${mmFormatted}-${ddFormatted}`;
+            // Build "YYYY-MM-DD"
+            const y = fullDate.getFullYear();
+            const m = String(fullDate.getMonth() + 1).padStart(2, "0");
+            const d = String(fullDate.getDate()).padStart(2, "0");
+            const excelDateKey = `${y}-${m}-${d}`;
 
-            // Check if this row corresponds to the selected date
-            if (dateKey === selectedDate) {
-              selectedDateSum += totalMins;
-              selectedDateCount++;
-              //   console.log(`Updated selected date (${dateKey}): Sum=${selectedDateSum}, Count=${selectedDateCount}`);
+            // If this row is the EXACT day user selected:
+            if (excelDateKey === selectedDate) {
+              selectedDaySum += totalMins;
+              selectedDayCount++;
             }
 
-            // Pre-toll => before Jan 5, 2025
+            // If pre-toll AND same weekday => accumulate day sums
+            // (only if fullDate < january5Cutoff)
             if (fullDate < january5Cutoff) {
-              // Only consider pre-toll data that matches the user's weekday
-              if (dayMap[fullDate.getDay()] !== userWeekday) return;
-
-              // Initialize aggregator if needed
-              if (!preTollDailyAggregator[dateKey]) {
-                preTollDailyAggregator[dateKey] = { sum: 0, count: 0 };
-                //   console.log(`Initialized pre-toll aggregator for ${dateKey}`);
+              const thisWeekday = dayMap[fullDate.getDay()];
+              if (thisWeekday === userWeekday) {
+                if (!preTollDays[excelDateKey]) {
+                  preTollDays[excelDateKey] = { sum: 0, count: 0 };
+                }
+                preTollDays[excelDateKey].sum += totalMins;
+                preTollDays[excelDateKey].count += 1;
               }
-              preTollDailyAggregator[dateKey].sum += totalMins;
-              preTollDailyAggregator[dateKey].count++;
-              // console.log(`Updated pre-toll aggregator for ${dateKey}: Sum=${preTollDailyAggregator[dateKey].sum}, Count=${preTollDailyAggregator[dateKey].count}`);
             }
           });
         }
       } else {
-        console.error("Failed to fetch Excel file.");
+        console.error("Failed to fetch /routes_all.xlsx");
       }
     } catch (err) {
       console.error("Error reading Excel data:", err);
     }
 
-    /* -------------------------- PARSE FIREBASE DATA ------------------------- */
+    /** -------------------- PARSE FIREBASE (only needed for the EXACT selected day) -------------------- */
     try {
-      console.log("Fetching Firebase data...");
-      // Each route is its own collection in Firestore
       const colRef = collection(db, selectedRoute);
       const snapshot = await getDocs(colRef);
-      //   console.log(`Firebase Documents Count: ${snapshot.size}`);
 
-      // Use snapshot.docs with Array's forEach to access index if needed
-      snapshot.docs.forEach((doc, index) => {
-        // Debugging: Log every N documents to avoid clutter
-        if (index % 50 === 0) {
-          //   console.log(`Firebase Doc ${index}: ID=${doc.id}`);
-        }
-
+      snapshot.docs.forEach((doc) => {
         const data = doc.data();
         const totalMins = data.total_minutes ?? 0;
+        if (typeof totalMins !== "number") return; // skip weird
 
-        // You’ll need to parse doc.id accordingly:
-        // e.g. "12-08_18-15" => mm = 12, dd = 08, hh=18, mn=15
-        const docId = doc.id; // For example: "12-08_18-15"
+        // doc id: "MM_DD_HH-MM"
+        // e.g. "12_29_18-15"
+        const docId = doc.id;
+        const [mmStr, ddStr, hhMin] = docId.split("_");
+        if (!mmStr || !ddStr || !hhMin) return;
 
-        // Adjust parsing based on actual format
-        const [datePart, timePart] = docId.split("_");
-        if (!datePart || !timePart) {
-          console.warn(`Invalid doc.id format: ${docId}`);
-          return;
-        }
+        const [hhStr, mnStr] = hhMin.split("-");
+        if (!hhStr || !mnStr) return;
 
-        const [mmStr, ddStr] = datePart.split("-");
-        const [hhStr, mnStr] = timePart.split("-");
-
-        if (!mmStr || !ddStr || !hhStr || !mnStr) {
-          console.warn(`Incomplete date/time in doc.id: ${docId}`);
-          return;
-        }
-
-        const mm = parseInt(mmStr, 10) - 1; // zero-based
+        const mm = parseInt(mmStr, 10) - 1;
         const dd = parseInt(ddStr, 10);
         const hh = parseInt(hhStr, 10);
         const mn = parseInt(mnStr, 10);
+        if ([mm, dd, hh, mn].some(isNaN)) return;
 
         const fullDate = parseDateComponents(mm, dd, hh, mn);
+        // Build "YYYY-MM-DD"
+        const y = fullDate.getFullYear();
+        const m = String(fullDate.getMonth() + 1).padStart(2, "0");
+        const d = String(fullDate.getDate()).padStart(2, "0");
+        const fbDateKey = `${y}-${m}-${d}`;
 
-        // Determine the date key
-        const yyyy = fullDate.getFullYear();
-        const mmFormatted = (fullDate.getMonth() + 1).toString().padStart(2, "0");
-        const ddFormatted = fullDate.getDate().toString().padStart(2, "0");
-        const dateKey = `${yyyy}-${mmFormatted}-${ddFormatted}`;
-
-        // Only process data for the selected date
-        if (dateKey !== selectedDate) return;
-
-        // Only consider data that matches the user's weekday
-        if (dayMap[fullDate.getDay()] !== userWeekday) return;
-
-        selectedDateSum += totalMins;
-        selectedDateCount++;
-        // console.log(`Updated selected date from Firebase (${dateKey}): Sum=${selectedDateSum}, Count=${selectedDateCount}`);
+        // Only accumulate if it matches the EXACT selected day
+        if (fbDateKey === selectedDate) {
+          selectedDaySum += totalMins;
+          selectedDayCount++;
+        }
       });
     } catch (err) {
       console.error("Error reading Firebase data:", err);
     }
 
-    /* --------------------- COMPUTE PRE-TOLL AVERAGE-OF-AVERAGES --------------------- */
-
-    // For each date in preTollDailyAggregator, get that date’s average
-    let sumOfDailyAverages = 0;
-    let numDates = 0;
-    Object.keys(preTollDailyAggregator).forEach((dateKey) => {
-      const { sum, count } = preTollDailyAggregator[dateKey];
+    /* ------------------------------------------------------------------
+       Compute the "pre-toll overall average" = 
+         average of (day i's average) across all pre-toll days 
+         that match the same weekday (Monday, Tuesday, etc.).
+    ------------------------------------------------------------------ */
+    const preTollDailyAverages: number[] = [];
+    for (const dateKey of Object.keys(preTollDays)) {
+      const { sum, count } = preTollDays[dateKey];
       if (count > 0) {
-        const dailyAvg = sum / count; // average for that day
-        sumOfDailyAverages += dailyAvg;
-        numDates++;
+        preTollDailyAverages.push(sum / count); 
       }
-    });
+    }
+    const preTollOverallAvg =
+      preTollDailyAverages.length > 0
+        ? preTollDailyAverages.reduce((acc, val) => acc + val, 0) / preTollDailyAverages.length
+        : 0;
 
-    const preTollAvgOfAverages = numDates > 0 ? sumOfDailyAverages / numDates : 0;
-    console.log(`Pre-Toll Avg of Averages (Excel only): ${preTollAvgOfAverages}`);
+    // The selected day’s average
+    const selectedDayAvg = selectedDayCount > 0 ? selectedDaySum / selectedDayCount : 0;
 
-    /* --------------------- COMPUTE SELECTED DATE AVERAGE --------------------- */
-    const selectedDateAvg = selectedDateCount > 0 ? selectedDateSum / selectedDateCount : 0;
-    console.log(`Selected Date Avg (Excel + Firebase): ${selectedDateAvg}`);
-
-    /* --------------------- FINAL DIFFERENCE --------------------- */
-    // difference = (selectedDateAvg - preTollAvgOfAverages)
-    const diff = selectedDateAvg - preTollAvgOfAverages;
+    // difference = selectedDayAvg - preTollOverallAvg
+    const diff = selectedDayAvg - preTollOverallAvg;
     const absDiff = Math.abs(diff);
 
-    // If diff < 0 => "less", else "more"
     setDifferenceWord(diff < 0 ? "less" : "more");
     setDifferenceMinutes(Math.round(absDiff));
 
-    console.log(`Difference: ${diff} (${diff < 0 ? "less" : "more"}), Minutes: ${Math.round(absDiff)}`);
+    console.log(
+      `\nPre-Toll Overall Average (avg of daily avgs): ${preTollOverallAvg.toFixed(2)}\n` +
+      `Selected Day Average: ${selectedDayAvg.toFixed(2)}\n` +
+      `Difference => ${diff.toFixed(2)} minutes`
+    );
   }, [selectedDate, selectedRoute]);
 
-  // Recompute whenever user changes either dropdown
+  // Run whenever user changes either dropdown
   useEffect(() => {
     computeDifference();
   }, [computeDifference]);
@@ -303,7 +283,7 @@ const CommuteSentence: React.FC = () => {
     <div style={{ margin: "2rem", fontSize: "1.1rem" }}>
       <p>
         On{" "}
-        {/* Dropdown #1: choose a date after Jan 5 */}
+        {/* Dropdown #1: select a date */}
         <select
           value={selectedDate}
           onChange={(e) => setSelectedDate(e.target.value)}

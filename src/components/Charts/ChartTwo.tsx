@@ -47,9 +47,7 @@ const ChartTwo: React.FC = () => {
   // ---------------------------------------------------
   // A) State
   // ---------------------------------------------------
-  // Visibility states for each series
-  const [isAffectedVisible, setIsAffectedVisible] = useState(true);
-  const [isNotAffectedVisible, setIsNotAffectedVisible] = useState(true);
+  // Removed visibility states for each series since ApexCharts' built-in legend will handle it
 
   // We'll keep two arrays of daily [timestamp, average] for each category
   const [seriesAffected, setSeriesAffected] = useState<[number, number][]>([]);
@@ -268,24 +266,21 @@ const ChartTwo: React.FC = () => {
   // ---------------------------------------------------
   // E) Chart Title
   // ---------------------------------------------------
-  const chartTitle = "Commute times expected to be affected or not by congestion pricing";
+  const chartTitle = "Commute times expected to be affected or not by congestion tolls";
 
   // ---------------------------------------------------
-  // F) Build final series based on visibility
+  // F) Build final series to include both datasets
   // ---------------------------------------------------
-  const finalSeries = [];
-  if (isAffectedVisible) {
-    finalSeries.push({
+  const finalSeries = [
+    {
       name: "Affected",
       data: seriesAffected,
-    });
-  }
-  if (isNotAffectedVisible) {
-    finalSeries.push({
+    },
+    {
       name: "Not Affected",
       data: seriesNotAffected,
-    });
-  }
+    },
+  ];
 
   // ---------------------------------------------------
   // G) ApexChart styling to match chartOne
@@ -295,10 +290,8 @@ const ChartTwo: React.FC = () => {
 
   // Check if data includes January 5, 2025 and at least one series is visible
   const hasJan5 =
-    (isAffectedVisible &&
-      seriesAffected.some(([ts, _]) => ts === jan5Timestamp)) ||
-    (isNotAffectedVisible &&
-      seriesNotAffected.some(([ts, _]) => ts === jan5Timestamp));
+    seriesAffected.some(([ts, _]) => ts === jan5Timestamp) ||
+    seriesNotAffected.some(([ts, _]) => ts === jan5Timestamp);
 
   // Memoize the options to optimize performance
   const options: ApexOptions = useMemo(() => ({
@@ -321,24 +314,32 @@ const ChartTwo: React.FC = () => {
           speed: 350
         }
       },
-      // Remove built-in legend since we're using custom controls
-      // Alternatively, you can keep it and handle events if possible
     },
     noData: {
       text: isLoading ? "Loading..." : "No data available",
       align: "center",
-      verticalAlign: "top",
+      verticalAlign: "middle",
       style: {
         color: "black",
         fontSize: "24px",
         fontFamily: "Satoshi, sans-serif",
       }
     },
-    // Dynamically set colors based on visible series
-    colors: [
-      ...(isAffectedVisible ? ["#5750F1"] : []),
-      ...(isNotAffectedVisible ? ["#FA7247"] : []),
-    ],
+    legend: { 
+      show: true, // Enable built-in legend
+      position: 'bottom', // Position legend below the chart
+      horizontalAlign: 'center', // Center align the legend
+      // labels: {
+      //   colors: ['#000'], // Adjust label colors as needed
+      //   fontSize: '12px', // Set legend text size to match ChartOne
+      // },
+      markers: {
+        width: 13,
+        height: 13,
+      },
+    },
+    // Set distinct colors for each series
+    colors: ["#5750F1", "#FA7247"],
     fill: {
       type: "gradient",
       gradient: {
@@ -373,10 +374,10 @@ const ChartTwo: React.FC = () => {
           const date = new Date(val as number);
           let day = String(date.getUTCDate()).padStart(2, '0'); // Ensures two-digit day
           const month = monthNames[date.getUTCMonth()]; // UTC Month
-          if (day[0] == "0"){
+          if (day[0] === "0"){
             day = day[1]
           }
-          return `${day} ${month}`; // e.g., "01 Jan"
+          return `${day} ${month}`; // e.g., "1 Jan"
         },
       },
       y: {
@@ -396,17 +397,17 @@ const ChartTwo: React.FC = () => {
           const date = new Date(timestamp as number);
           let day = String(date.getUTCDate()).padStart(2, '0'); // Ensures two-digit day
           const month = monthNames[date.getUTCMonth()]; // UTC Month
-          if (day[0] == "0"){
+          if (day[0] === "0"){
             day = day[1]
           }
-          return `${day} ${month}`; // e.g., "01 Jan"
+          return `${day} ${month}`; // e.g., "1 Jan"
         },
       },
       // Removed tickAmount to let ApexCharts handle it automatically
     },
     yaxis: {
       title: {
-        text: "Average commute time",
+        text: "Average commute time (min)",
       },
       labels: {
         formatter: (val) => (typeof val === 'number' ? `${val.toFixed(0)} min` : ''),
@@ -441,9 +442,6 @@ const ChartTwo: React.FC = () => {
         },
       ] : [],
     },
-    legend: {
-      show: false, // Hide built-in legend since we're using custom controls
-    },
     responsive: [
       {
         breakpoint: 1024,
@@ -458,7 +456,7 @@ const ChartTwo: React.FC = () => {
         },
       },
     ],
-  }), [isLoading, hasJan5, jan5Timestamp, seriesAffected, seriesNotAffected, isAffectedVisible, isNotAffectedVisible]);
+  }), [isLoading, hasJan5, jan5Timestamp, seriesAffected, seriesNotAffected]);
 
   // ---------------------------------------------------
   // H) Render
@@ -471,46 +469,16 @@ const ChartTwo: React.FC = () => {
           {chartTitle}
         </h4>
 
-        <div className="flex flex-row items-center gap-4">
-          {/* Custom Legend Controls */}
-          <div className="flex items-center space-x-6">
-            {/* Affected Legend Item */}
-            <div 
-              role="button"
-              aria-pressed={isAffectedVisible}
-              className="flex items-center space-x-2 cursor-pointer"
-              onClick={() => setIsAffectedVisible(prev => !prev)}
-            >
-              <span 
-                className={`w-4 h-4 rounded-full transition-opacity duration-300 ${isAffectedVisible ? 'opacity-100' : 'opacity-50'}`}
-                style={{ backgroundColor: "#5750F1" }}
-              ></span>
-              <span className="text-sm text-gray-700 dark:text-gray-300">Affected</span>
-            </div>
-            {/* Not Affected Legend Item */}
-            <div 
-              role="button"
-              aria-pressed={isNotAffectedVisible}
-              className="flex items-center space-x-2 cursor-pointer"
-              onClick={() => setIsNotAffectedVisible(prev => !prev)}
-            >
-              <span 
-                className={`w-4 h-4 rounded-full transition-opacity duration-300 ${isNotAffectedVisible ? 'opacity-100' : 'opacity-50'}`}
-                style={{ backgroundColor: "#FA7247" }}
-              ></span>
-              <span className="text-sm text-gray-700 dark:text-gray-300">Not Affected</span>
-            </div>
-          </div>
+        {/* Removed Custom Legend Controls */}
 
-          {/* Refresh Button */}
-          <button
-            onClick={handleReload}
-            className="flex items-center justify-center p-2 bg-gray-200 rounded hover:bg-gray-300 transition"
-            aria-label="Refresh Data"
-          >
-            <FiRefreshCw size={20} />
-          </button>
-        </div>
+        {/* Refresh Button */}
+        <button
+          onClick={handleReload}
+          className="flex items-center justify-center p-2 bg-gray-200 rounded hover:bg-gray-300 transition"
+          aria-label="Refresh Data"
+        >
+          <FiRefreshCw size={20} />
+        </button>
       </div>
 
       {/* Chart */}
