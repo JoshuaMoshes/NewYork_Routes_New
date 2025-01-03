@@ -46,8 +46,7 @@ const ECommerce: React.FC = () => {
               <div className="mt-4">
                 <p className="text-gray-700 text-sm">
                 {/* The chart above displays the average traffic for 5 routes in the Congestion Zone over time, before and after the start of congestion pricing. */}
-                The chart above displays the average traffic for five routes in the Congestion Zone over time, and the average traffic for two routes in Boston and Chicago before and after the start of congestion pricing.
-                </p>
+                The chart above displays the average traffic for thirteen routes in the Congestion Zone or on bridges leading to the Congestion Zone, and the average traffic for two routes in Boston and Chicago, before and after the start of congestion pricing.                </p>
               </div>
             </div>
           </div>

@@ -15,7 +15,7 @@ import { FiRefreshCw } from "react-icons/fi";
 // ---------------------------------------------------
 // 1) Define which routes are "Affected" vs "Not Affected"
 // ---------------------------------------------------
-const affectedRoutes = [1, 2, 3, 4, 5];
+const affectedRoutes = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
 const notAffectedRoutes = [16, 18];
 
 // ---------------------------------------------------
@@ -266,18 +266,18 @@ const ChartTwo: React.FC = () => {
   // ---------------------------------------------------
   // E) Chart Title
   // ---------------------------------------------------
-  const chartTitle = "Commute times before and after congestion pricing";
+  const chartTitle = "Commute Times on Congestion Zone Routes in New York City Versus Boston and Chicago";
 
   // ---------------------------------------------------
   // F) Build final series to include both datasets
   // ---------------------------------------------------
   const finalSeries = [
     {
-      name: "Affected",
+      name: "Routes in New York City Congestion Zone",
       data: seriesAffected,
     },
     {
-      name: "Not Affected",
+      name: "Routes in Boston and Chicago",
       data: seriesNotAffected,
     },
   ];

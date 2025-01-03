@@ -10,25 +10,25 @@ import { FiRefreshCw } from "react-icons/fi";
 
 // Define the titles for each route, ignoring any text in parentheses
 const routeTitles = [
-  "Lenox Hill to Battery Park", // Route 1
-  "Hell's Kitchen to Midtown East", // Route 2
-  "Chelsea to Kips Bay", // Route 3
-  "Greenwich Village to Alphabet City", // Route 4
-  "Tribeca to Lower East Side", // Route 5
-  "Lincoln Tunnel", // Route 6
-  "Holland Tunnel", // Route 7
-  "Huel L Cary Tunnel", // Route 8
-  "Brooklyn Bridge", // Route 9
-  "Manhattan Bridge", // Route 10
-  "Williamsburg Bridge", // Route 11
-  "Queens-Midtown Tunnel", // Route 12
-  "Queensboro Bridge", // Route 13
-  "FDR Drive", // Route 14
-  "East Harlem to Longwood", // Route 15
-  "Coolidge Corner to Boston City Hall", // Route 16
-  "Washington Heights to Lenox Hill", // Route 17
-  "River North to Motor Row District", // Route 18
-  "Park Slope to Dumbo", // Route 19
+  "Lenox Hill to Battery Park (Affected)", // Route 1
+  "Hell's Kitchen to Midtown East (Affected)", // Route 2
+  "Chelsea to Kips Bay (Affected)", // Route 3
+  "Greenwich Village to Alphabet City (Affected)", // Route 4
+  "Tribeca to Lower East Side (Affected)", // Route 5
+  "Lincoln Tunnel (Affected)", // Route 6
+  "Holland Tunnel (Affected)", // Route 7
+  "Huel L Cary Tunnel (Affected)", // Route 8
+  "Brooklyn Bridge (Affected)", // Route 9
+  "Manhattan Bridge (Affected)", // Route 10
+  "Williamsburg Bridge (Affected)", // Route 11
+  "Queens-Midtown Tunnel (Affected)", // Route 12
+  "Queensboro Bridge (Affected)", // Route 13
+  "FDR Drive (Ambigious Affect)", // Route 14
+  "East Harlem to Longwood (Ambigious Affect)", // Route 15
+  "Coolidge Corner to Boston City Hall (Unaffected)", // Route 16
+  "Washington Heights to Lenox Hill (Ambigious Affect)", // Route 17
+  "River North to Motor Row District (Unaffected)", // Route 18
+  "Park Slope to Dumbo (Ambigious Affect)", // Route 19
 ];
 
 const dayMap = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
@@ -372,7 +372,7 @@ const ChartOne: React.FC = () => {
     <div className="col-span-12 rounded-[10px] bg-white px-4 pb-6 pt-7.5 shadow-1 dark:bg-gray-dark dark:shadow-card xl:col-span-7">
       <div className="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between">
         <h4 className="text-body-2xlg font-bold text-dark dark:text-white mb-2 sm:mb-0 flex items-center flex-wrap">
-          <span>Commute times for </span>
+          <span>Commute Times for </span>
           {/* Route Dropdown */}
           <select
             aria-label="Select Route"
